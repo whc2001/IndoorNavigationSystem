@@ -285,7 +285,7 @@ function onCanvasMouseUp(o) {
 function onMouseWheel(o) {
     var delta = o.e.deltaY;
     var zoom = canvas.getZoom();
-    zoom *= (o.e.shiftKey ? 0.999 : 0.75) ** delta;
+    zoom *= (o.e.shiftKey ? 0.999 : 0.9) ** delta;
     if (zoom > 20) zoom = 20;
     if (zoom < 0.01) zoom = 0.01;
     canvas.zoomToPoint({ x: o.e.offsetX, y: o.e.offsetY }, zoom);
