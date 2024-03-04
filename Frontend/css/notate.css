@@ -1,0 +1,39 @@
+body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    height: 100vh;
+}
+
+#grpType {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    padding: 10px 0;
+    width: 100%;
+    box-sizing: border-box;
+    border-bottom: 1px solid #666;
+}
+
+#grpType input[type="radio"] {
+    margin: 0 10px;
+}
+
+#grpCanvas {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: calc(100vh - 50px); /* Adjust this value based on the height of your grpType div */
+    margin: 10px 0;
+}
+
+#cvsMain {
+    width: 90%;
+    height: 90%;
+    border: 1px solid #666;
+}

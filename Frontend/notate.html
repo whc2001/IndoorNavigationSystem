@@ -1,0 +1,39 @@
+
+<head>
+    <link rel="stylesheet" href="css/notate.css">
+    <script src="js/lib/fabric.min.js"></script>
+    <script src="js/notate.js"></script>
+</head>
+
+
+<body>
+    <div id="grpOperation">
+        <input type="button" id="btnOpenImage" value="Open Image">
+        <input type="radio" id="optAdd" name="operation" value="add" checked>
+        <label for="optAdd">Add/Move</label>
+        <input type="radio" id="optDelete" name="operation" value="delete">
+        <label for="optDelete">Delete</label>
+        <input type="radio" id="optAttribute" name="operation" value="attribute">
+        <label for="optAttribute">Attribute</label>
+        <input type="button" id="btnExport" value="Export">
+    </div>
+    <div id="grpType">
+        <input type="radio" id="optConnector" name="type" value="-1" checked>
+        <label for="optType1">Connector</label>
+        <input type="radio" id="optCorridor" name="type" value="0">
+        <label for="optType2">Corridor</label>
+        <input type="radio" id="optStair" name="type" value="1">
+        <label for="optType3">Stair</label>
+        <input type="radio" id="optInsideDoor" name="type" value="2">
+        <label for="optType3">Inside Door</label>
+        <input type="radio" id="optClassroom" name="type" value="3">
+        <label for="optType3">Classroom</label>
+        <input type="radio" id="optElevator" name="type" value="4">
+        <label for="optType3">Elevator</label>
+        <input type="radio" id="optOutsideDoor" name="type" value="5">
+        <label for="optType3">Outside Door</label>
+    </div>
+    <div id="grpCanvas">
+        <canvas id="cvsMain" width="90%" height="80%" style="border: 1px solid #666;"></canvas>
+    </div>
+</body>
