@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <title>Indoor navigation system for york university</title>
+    <link rel="stylesheet" type="text/css" href="static/css/MainPage.css">
+
+</head>
+<body>
+
+    <header>
+        <h1>Indoor Navigation System for York University</h1>
+    </header>
+    <div class="form-container">
+        <form action="/Main/Load" method="GET">
+            <label>Search:</label>
+            <select id="nameSelect" name="name" required>
+                <option value="">Select Building</option>
+            </select>
+            <select id="floorSelect" name="floor" required>
+                <option value="">Select Floor</option>
+            </select>
+            <button type="submit" id = "LoadButton">Load</button>
+        </form>
+
+        <form action="/Main/Navigate" method="GET">
+            <label>Navigate:</label>
+            <select id="nameSelect2" name="name" required>
+                <option value="">Select Building</option>
+            </select>
+            <select id="floorSelect2" name="floor" required>
+                <option value="">Select Floor</option>
+            </select>
+            <input type="number" id = "start" name="start" placeholder="start point" required>
+            <input type="number" id = "end" name="end" placeholder="destination" required>
+            <button type="submit" id = "NavigateButton">Navigate</button>
+        </form>
+    </div>
+
+    <div id = "imageContainer1">
+        <img id="mapImage" src="" style="margin:20px;">
+    </div>
+
+    <div id = "imageContainer2">
+    </div>
+    <p id="result"></p>
+    <button id="jumpButton">Reset</button>
+
+	<div class = "container">
+        <p>List of Building Code Currently Support:</p>
+		<table id="ListOfBuildingAcronyms" border="1">
+			<tr>
+				<th>Acronym</th>
+				<th>Building Name</th>
+			</tr>
+            <tr>
+                <td>CLH</td>
+                <td>Curtis Lecture Halls</td>
+            </tr>
+		</table>
+	</div>
+
+    <button id="scrollToTop" onclick="scrollToTop()">Top</button>
+
+    <button id="scrollToBottom" onclick="scrollToBottom()">Bottom</button>
+
+
+    <script src="static/js/MainPage.js"></script>
+</body>
+</html>
