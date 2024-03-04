@@ -285,7 +285,7 @@ function onCanvasMouseUp(o) {
 function onMouseWheel(o) {
     var delta = o.e.deltaY;
     var zoom = canvas.getZoom();
-    zoom *= 0.999 ** delta;
+    zoom *= (o.e.shiftKey ? 0.999 : 0.75) ** delta;
     if (zoom > 20) zoom = 20;
     if (zoom < 0.01) zoom = 0.01;
     canvas.zoomToPoint({ x: o.e.offsetX, y: o.e.offsetY }, zoom);
@@ -339,12 +339,17 @@ function init() {
                 reader.onload = function (e) {
                     const img = new Image();
                     img.onload = function () {
-                        initCanvas(img.width, img.height);
+                        initCanvas(cvsMain.clientWidth, cvsMain.clientHeight);
+                        // make image centered on the canvas, and scale it to fit the canvas to show the whole image
+                        const scale = Math.min(canvas.width / img.width, canvas.height / img.height);
                         canvas.setBackgroundImage(new fabric.Image(img), canvas.renderAll.bind(canvas), {
-                            top: img.height / 2,
-                            left: img.width / 2,
-                            scaleX: canvas.width / img.width,
-                            scaleY: canvas.height / img.height
+                            scaleX: scale,
+                            scaleY: scale,
+                            top: canvas.height / 2,
+                            left: canvas.width / 2,
+                            originX: "center",
+                            originY: "center",
+                            selectable: false,
                         });
                     };
                     img.src = e.target.result;
