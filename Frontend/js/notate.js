@@ -103,7 +103,12 @@ function placeNewNode(type, x, y) {
         fill: nodeColors[type],
         left: x,
         top: y,
-        type: type
+        shadow: new fabric.Shadow({ 
+            color: "gray", 
+            blur: 2, 
+            offsetX: 2, 
+            offsetY: 2
+        }),
     });
     node.hasControls = false;
     node.hasBorders = false;
@@ -140,6 +145,12 @@ function beginConnecting(startNode) {
         stroke: "black",
         strokeWidth: 5,
         selectable: false,
+        shadow: new fabric.Shadow({ 
+            color: "gray", 
+            blur: 2, 
+            offsetX: 2, 
+            offsetY: 2
+        }),
     });
     connectWire.perPixelTargetFind = true;
 
