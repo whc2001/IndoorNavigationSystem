@@ -252,14 +252,29 @@ function onCanvasMouseDown(o) {
     const pointer = canvas.getPointer(o.e);
 
     if (o.button === MOUSE_RIGHT) {
-        if (operation === "edit" && target && target.graphProperties.type === "node" && !isConnecting) {
-            beginConnecting(target);
-            canvas.renderAll();
-        }
-        else if (!target) {
+        if (!target) {
             isPanning = true;
             lastPanX = o.e.clientX;
             lastPanY = o.e.clientY;
+        }
+        else {
+            if (operation === "edit" && target && target.graphProperties.type === "node" && !isConnecting) {
+                beginConnecting(target);
+                canvas.renderAll();
+            }
+            else if (operation === "inspect") {
+                if (target && target.graphProperties.type === "node") {
+                    alert(JSON.stringify(target.appProperties, null, 2));
+                }
+            }
+            else if (operation === "attribute") {
+                if (target && target.graphProperties.type === "node") {
+                    const data = prompt("Enter attribute data", target.appProperties.data);
+                    if (data) {
+                        target.appProperties.data = data;
+                    }
+                }
+            }
         }
     }
     else if (o.button === MOUSE_LEFT) {
@@ -278,19 +293,6 @@ function onCanvasMouseDown(o) {
                 const type = getSelectedNodeType();
                 placeNewNode(type, pointer.x, pointer.y);
                 canvas.renderAll();
-            }
-        }
-        else if (operation === "inspect") {
-            if (target && target.graphProperties.type === "node") {
-                alert(JSON.stringify(target.appProperties, null, 2));
-            }
-        }
-        else if (operation === "attribute") {
-            if (target && target.graphProperties.type === "node") {
-                const data = prompt("Enter attribute data", target.appProperties.data);
-                if (data) {
-                    target.appProperties.data = data;
-                }
             }
         }
     }
