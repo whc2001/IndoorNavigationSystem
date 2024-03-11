@@ -35,7 +35,7 @@ let lastPanX, lastPanY;
 let isConnecting = false;
 let connectStartNode = null;
 let connectWire = null;
-let graphSizeValue = 10;
+let graphSizeValue = 2;
 
 function getNodeSize() {
     return graphSizeValue;
