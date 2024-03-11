@@ -34,6 +34,15 @@ let lastPanX, lastPanY;
 let isConnecting = false;
 let connectStartNode = null;
 let connectWire = null;
+let graphSizeValue = 10;
+
+function getNodeSize() {
+    return graphSizeValue;
+}
+
+function getConnectionSize() {
+    return graphSizeValue / 1.25;
+}
 
 function hasConnection(node1, node2) {  // check if two nodes are connected, ignore direction
     return node1.graphProperties.connections.some(i =>
@@ -103,7 +112,7 @@ function exportGraph() {
 
 function placeNewNode(type, x, y) {
     const node = new fabric.Circle({
-        radius: 10,
+        radius: getNodeSize(),
         fill: nodeColors[type],
         left: x,
         top: y,
@@ -147,7 +156,7 @@ function beginConnecting(startNode) {
     connectStartNode = startNode;
     connectWire = new fabric.Line([connectStartNode.left, connectStartNode.top, connectStartNode.left, connectStartNode.top], {
         stroke: "black",
-        strokeWidth: 8,
+        strokeWidth: getConnectionSize(),
         selectable: false,
         shadow: new fabric.Shadow({ 
             color: "gray", 
@@ -223,6 +232,18 @@ function deleteConnection(edge) {
         );
     });
     canvas.remove(edge);
+}
+
+function resizeGraph() {
+    canvas.getObjects().forEach(obj => {
+        if (obj.graphProperties?.type === "node") {
+            obj.set({ radius: getNodeSize() });
+        }
+        else if (obj.graphProperties?.type === "edge") {
+            obj.set({ strokeWidth: getConnectionSize() });
+        }
+    });
+    canvas.renderAll();
 }
 
 function onCanvasMouseDown(o) {
@@ -317,15 +338,8 @@ function onMouseWheel(o) {
 }
 
 function onGraphSizeChange() {
-    canvas.getObjects().forEach(obj => {
-        if (obj.graphProperties?.type === "node") {
-            obj.set({ radius: numGraphSize.value });
-        }
-        else if (obj.graphProperties?.type === "edge") {
-            obj.set({ strokeWidth: numGraphSize.value / 1.25 });
-        }
-    });
-    canvas.renderAll();
+    graphSizeValue = numGraphSize.value;
+    resizeGraph();
 }
 
 function initCanvas(width, height) {
