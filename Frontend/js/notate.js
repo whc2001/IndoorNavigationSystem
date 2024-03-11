@@ -1,3 +1,7 @@
+const MOUSE_LEFT = 1;
+const MOUSE_MIDDLE = 2;
+const MOUSE_RIGHT = 3;
+
 const nodeTypes = {
     CONNECTOR: -1,
     CORRIDOR: 0,
@@ -6,7 +10,7 @@ const nodeTypes = {
     CLASSROOM: 3,
     ELEVATOR: 4,
     OUTSIDE_DOOR: 5,
-}
+};
 
 const nodeColors = {
     [nodeTypes.CONNECTOR]: "cyan",
@@ -16,10 +20,11 @@ const nodeColors = {
     [nodeTypes.CLASSROOM]: "yellow",
     [nodeTypes.ELEVATOR]: "pink",
     [nodeTypes.OUTSIDE_DOOR]: "purple",
-}
+};
 
 let btnOpenImage, btnExport;
-let optAdd, optDelete, optInspect, optAttribute;
+let optEdit, optInspect, optAttribute;
+let numGraphSize;
 let optConnector, optCorridor, optStair, optInsideDoor, optClassroom, optElevator, optOutsideDoor;
 let cvsMain, canvas;
 
@@ -42,14 +47,14 @@ function hasConnection(node1, node2) {  // check if two nodes are connected, ign
 
 function getSelectedOperation() {
     switch (true) {
-        case optAdd.checked:
-            return "add";
-        case optDelete.checked:
-            return "delete";
+        case optEdit.checked:
+            return "edit";
+        case optInspect.checked:
+            return "inspect";
         case optAttribute.checked:
             return "attribute";
         default:
-            return "add";
+            return "edit";
     }
 }
 
@@ -97,9 +102,8 @@ function exportGraph() {
 }
 
 function placeNewNode(type, x, y) {
-    const radius = 10;
     const node = new fabric.Circle({
-        radius: radius,
+        radius: 10,
         fill: nodeColors[type],
         left: x,
         top: y,
@@ -143,7 +147,7 @@ function beginConnecting(startNode) {
     connectStartNode = startNode;
     connectWire = new fabric.Line([connectStartNode.left, connectStartNode.top, connectStartNode.left, connectStartNode.top], {
         stroke: "black",
-        strokeWidth: 5,
+        strokeWidth: 8,
         selectable: false,
         shadow: new fabric.Shadow({ 
             color: "gray", 
@@ -226,18 +230,17 @@ function onCanvasMouseDown(o) {
     const target = o.target;
     const pointer = canvas.getPointer(o.e);
 
-    // Left
-    if (o.button === 1) {
-        if (operation === "add") {
-            // Only add new node if clicking on empty space
-            if (!target) {
-                const type = getSelectedNodeType();
-                placeNewNode(type, pointer.x, pointer.y);
-                canvas.renderAll();
-            }
+    if(o.button === MOUSE_LEFT) {
+        // if not dragging a node, start panning
+        if(!target) {
+            isPanning = true;
+            lastPanX = o.e.clientX;
+            lastPanY = o.e.clientY;
         }
-        else if (operation === "delete") {
-            if (target) {
+    }
+    else if(o.button === MOUSE_RIGHT) {
+        if(operation === "edit") {
+            if(target && o.e.ctrlKey) {
                 const type = target.graphProperties.type;
                 if (type === "node") {
                     deleteNode(target);
@@ -245,6 +248,15 @@ function onCanvasMouseDown(o) {
                 else if (type === "edge") {
                     deleteConnection(target);
                 }
+                canvas.renderAll();
+            }
+            else if(!target) {
+                const type = getSelectedNodeType();
+                placeNewNode(type, pointer.x, pointer.y);
+                canvas.renderAll();
+            }
+            else if (target && target.graphProperties.type === "node" && !isConnecting) {
+                beginConnecting(target);
                 canvas.renderAll();
             }
         }
@@ -260,19 +272,6 @@ function onCanvasMouseDown(o) {
                     target.appProperties.data = data;
                 }
             }
-        }
-    }
-    // Right
-    else if (o.button === 3) {
-        // Only start connecting if clicking on a node
-        if (target && target.graphProperties.type === "node" && !isConnecting) {
-            beginConnecting(target);
-            canvas.renderAll();
-        }
-        else {
-            isPanning = true;
-            lastPanX = o.e.clientX;
-            lastPanY = o.e.clientY;
         }
     }
 }
@@ -295,13 +294,13 @@ function onCanvasMouseMove(o) {
 }
 
 function onCanvasMouseUp(o) {
-    if (o.button === 3) {
+    if(o.button === MOUSE_LEFT) {
+        isPanning = false;
+    }
+    else if (o.button === MOUSE_RIGHT) {
         if (isConnecting) {
             endConnecting(o.target);
             canvas.renderAll();
-        }
-        else if (isPanning) {
-            isPanning = false;
         }
     }
 }
@@ -315,6 +314,18 @@ function onMouseWheel(o) {
     canvas.zoomToPoint({ x: o.e.offsetX, y: o.e.offsetY }, zoom);
     o.e.preventDefault();
     o.e.stopPropagation();
+}
+
+function onGraphSizeChange() {
+    canvas.getObjects().forEach(obj => {
+        if (obj.graphProperties?.type === "node") {
+            obj.set({ radius: numGraphSize.value });
+        }
+        else if (obj.graphProperties?.type === "edge") {
+            obj.set({ strokeWidth: numGraphSize.value / 1.25 });
+        }
+    });
+    canvas.renderAll();
 }
 
 function initCanvas(width, height) {
@@ -339,10 +350,12 @@ function init() {
     btnOpenImage = document.getElementById("btnOpenImage");
     btnExport = document.getElementById("btnExport");
 
-    optAdd = document.getElementById("optAdd");
-    optDelete = document.getElementById("optDelete");
+    optEdit = document.getElementById("optEdit");
     optInspect = document.getElementById("optInspect");
     optAttribute = document.getElementById("optAttribute");
+
+    numGraphSize = document.getElementById("numGraphSize");
+    numGraphSize.addEventListener("change", onGraphSizeChange);
 
     optConnector = document.getElementById("optConnector");
     optCorridor = document.getElementById("optCorridor");

@@ -9,14 +9,13 @@
 <body>
     <div id="grpOperation">
         <input type="button" id="btnOpenImage" value="Open Image">
-        <input type="radio" id="optAdd" name="operation" value="add" checked>
-        <label for="optAdd">Add/Move</label>
-        <input type="radio" id="optDelete" name="operation" value="delete">
-        <label for="optDelete">Delete</label>
+        <input type="radio" id="optEdit" name="operation" value="edit" checked>
+        <label for="optAdd">Edit</label>
         <input type="radio" id="optInspect" name="operation" value="inspect">
         <label for="optInspect">Inspect</label>
         <input type="radio" id="optAttribute" name="operation" value="attribute">
         <label for="optAttribute">Attribute</label>
+        Size: <input type="number" id="numGraphSize" min="2" max="20" value="10">
         <input type="button" id="btnExport" value="Export">
     </div>
     <div id="grpType">
