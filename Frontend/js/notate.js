@@ -252,7 +252,7 @@ function onCanvasMouseDown(o) {
     const pointer = canvas.getPointer(o.e);
 
     if (o.button === MOUSE_RIGHT) {
-        if (target && target.graphProperties.type === "node" && !isConnecting) {
+        if (operation === "edit" && target && target.graphProperties.type === "node" && !isConnecting) {
             beginConnecting(target);
             canvas.renderAll();
         }
