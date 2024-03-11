@@ -22,6 +22,7 @@ const nodeColors = {
     [nodeTypes.OUTSIDE_DOOR]: "purple",
 };
 
+let grpCanvas;
 let btnOpenImage, btnExport;
 let optEdit, optInspect, optAttribute;
 let numGraphSize;
@@ -116,6 +117,8 @@ function placeNewNode(type, x, y) {
         fill: nodeColors[type],
         left: x,
         top: y,
+        lockMovementX: true,
+        lockMovementY: true,
         shadow: new fabric.Shadow({
             color: "gray",
             blur: 2,
@@ -246,6 +249,15 @@ function resizeGraph() {
     canvas.renderAll();
 }
 
+function setNodeMovable(canMove) {
+    canvas.getObjects().forEach(obj => {
+        if (obj.graphProperties?.type === "node") {
+            obj.lockMovementX = !canMove;
+            obj.lockMovementY = !canMove;
+        }
+    });
+}
+
 function onCanvasMouseDown(o) {
     const operation = getSelectedOperation();
     const target = o.target;
@@ -338,6 +350,23 @@ function onMouseWheel(o) {
     o.e.stopPropagation();
 }
 
+function onKeyDown(o) {
+    // alt key
+    if (o.keyCode === 18) {
+        setNodeMovable(true);
+    }
+}
+
+function onKeyUp(o) {
+    // alt key
+    if (o.keyCode === 18) {
+        setNodeMovable(false);
+    }
+}
+
+function onKeyPress(o) {
+}
+
 function onGraphSizeChange() {
     graphSizeValue = numGraphSize.value;
     resizeGraph();
@@ -359,9 +388,17 @@ function initCanvas(width, height) {
     canvas.on("mouse:move", onCanvasMouseMove);
     canvas.on("mouse:up", onCanvasMouseUp);
     canvas.on("mouse:wheel", onMouseWheel);
+
+    //grpCanvas.tabIndex = 1000;
+    document.addEventListener("keydown", onKeyDown, false);
+    document.addEventListener("keyup", onKeyUp, false);
+    document.addEventListener("keypress", onKeyPress, false);
+
 }
 
 function init() {
+    grpCanvas = document.getElementById("grpCanvas");
+
     btnOpenImage = document.getElementById("btnOpenImage");
     btnExport = document.getElementById("btnExport");
 
