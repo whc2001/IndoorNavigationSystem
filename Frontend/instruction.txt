@@ -1,16 +1,14 @@
 Edit mode:
 	Move map		Right drag on Map
-	Move node		Left drag on Node
+	Move node		Alt + Left drag on Node
 	Add node			Left click on Map
 	Delete node		Ctrl+Left click on Node
 	Connect node		Right drag on Node
 
 Inspect mode:
 	Move map		Right drag on Map
-	Move node		Left drag on Node
 	Inspect node		Right click on Node
 
 Attribute mode:
 	Move map		Right drag on Map
-	Move node		Left drag on Node
 	Edit node attribute		Right click on Node
