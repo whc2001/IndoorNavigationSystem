@@ -314,13 +314,13 @@ function onCanvasMouseMove(o) {
 }
 
 function onCanvasMouseUp(o) {
-    if (o.button === MOUSE_LEFT) {
-        isPanning = false;
-    }
-    else if (o.button === MOUSE_RIGHT) {
+    if (o.button === MOUSE_RIGHT) {
         if (isConnecting) {
             endConnecting(o.target);
             canvas.renderAll();
+        }
+        else {
+            isPanning = false;
         }
     }
 }
