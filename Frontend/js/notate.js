@@ -19,7 +19,7 @@ const nodeColors = {
 }
 
 let btnOpenImage, btnExport;
-let optAdd, optDelete, optAttribute;
+let optAdd, optDelete, optInspect, optAttribute;
 let optConnector, optCorridor, optStair, optInsideDoor, optClassroom, optElevator, optOutsideDoor;
 let cvsMain, canvas;
 
@@ -248,6 +248,19 @@ function onCanvasMouseDown(o) {
                 canvas.renderAll();
             }
         }
+        else if (operation === "inspect") {
+            if(target && target.graphProperties.type === "node") {
+                alert(JSON.stringify(target, null, 2));
+            }
+        }
+        else if(operation === "attribute") {
+            if(target && target.graphProperties.type === "node") {
+                const data = prompt("Enter attribute data", target.appProperties.data);
+                if(data) {
+                    target.appProperties.data = data;
+                }
+            }
+        }
     }
     // Right
     else if (o.button === 3) {
@@ -328,6 +341,7 @@ function init() {
 
     optAdd = document.getElementById("optAdd");
     optDelete = document.getElementById("optDelete");
+    optInspect = document.getElementById("optInspect");
     optAttribute = document.getElementById("optAttribute");
 
     optConnector = document.getElementById("optConnector");
