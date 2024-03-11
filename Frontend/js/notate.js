@@ -283,7 +283,7 @@ function onCanvasMouseDown(o) {
         }
         else if (operation === "inspect") {
             if(target && target.graphProperties.type === "node") {
-                alert(JSON.stringify(target, null, 2));
+                alert(JSON.stringify(target.appProperties, null, 2));
             }
         }
         else if(operation === "attribute") {
