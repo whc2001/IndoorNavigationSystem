@@ -1,0 +1,11 @@
+Move map
+Move node
+Add node
+Delete node
+Connect node
+{
+//Inspect node
+//Edit node attribute
+or
+//Select node
+}
