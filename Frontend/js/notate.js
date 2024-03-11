@@ -351,14 +351,12 @@ function onMouseWheel(o) {
 }
 
 function onKeyDown(o) {
-    // alt key
-    if (o.keyCode === 18) {
+    if (getSelectedOperation() === "edit" && o.keyCode === 18) {
         setNodeMovable(true);
     }
 }
 
 function onKeyUp(o) {
-    // alt key
     if (o.keyCode === 18) {
         setNodeMovable(false);
     }
