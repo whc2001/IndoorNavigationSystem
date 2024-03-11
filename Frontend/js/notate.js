@@ -116,10 +116,10 @@ function placeNewNode(type, x, y) {
         fill: nodeColors[type],
         left: x,
         top: y,
-        shadow: new fabric.Shadow({ 
-            color: "gray", 
-            blur: 2, 
-            offsetX: 2, 
+        shadow: new fabric.Shadow({
+            color: "gray",
+            blur: 2,
+            offsetX: 2,
             offsetY: 2
         }),
     });
@@ -158,10 +158,10 @@ function beginConnecting(startNode) {
         stroke: "black",
         strokeWidth: getConnectionSize(),
         selectable: false,
-        shadow: new fabric.Shadow({ 
-            color: "gray", 
-            blur: 2, 
-            offsetX: 2, 
+        shadow: new fabric.Shadow({
+            color: "gray",
+            blur: 2,
+            offsetX: 2,
             offsetY: 2
         }),
     });
@@ -251,17 +251,20 @@ function onCanvasMouseDown(o) {
     const target = o.target;
     const pointer = canvas.getPointer(o.e);
 
-    if(o.button === MOUSE_LEFT) {
-        // if not dragging a node, start panning
-        if(!target) {
+    if (o.button === MOUSE_RIGHT) {
+        if (target && target.graphProperties.type === "node" && !isConnecting) {
+            beginConnecting(target);
+            canvas.renderAll();
+        }
+        else if (!target) {
             isPanning = true;
             lastPanX = o.e.clientX;
             lastPanY = o.e.clientY;
         }
     }
-    else if(o.button === MOUSE_RIGHT) {
-        if(operation === "edit") {
-            if(target && o.e.ctrlKey) {
+    else if (o.button === MOUSE_LEFT) {
+        if (operation === "edit") {
+            if (target && o.e.ctrlKey) {
                 const type = target.graphProperties.type;
                 if (type === "node") {
                     deleteNode(target);
@@ -271,25 +274,21 @@ function onCanvasMouseDown(o) {
                 }
                 canvas.renderAll();
             }
-            else if(!target) {
+            else if (!target) {
                 const type = getSelectedNodeType();
                 placeNewNode(type, pointer.x, pointer.y);
                 canvas.renderAll();
             }
-            else if (target && target.graphProperties.type === "node" && !isConnecting) {
-                beginConnecting(target);
-                canvas.renderAll();
-            }
         }
         else if (operation === "inspect") {
-            if(target && target.graphProperties.type === "node") {
+            if (target && target.graphProperties.type === "node") {
                 alert(JSON.stringify(target.appProperties, null, 2));
             }
         }
-        else if(operation === "attribute") {
-            if(target && target.graphProperties.type === "node") {
+        else if (operation === "attribute") {
+            if (target && target.graphProperties.type === "node") {
                 const data = prompt("Enter attribute data", target.appProperties.data);
-                if(data) {
+                if (data) {
                     target.appProperties.data = data;
                 }
             }
@@ -315,7 +314,7 @@ function onCanvasMouseMove(o) {
 }
 
 function onCanvasMouseUp(o) {
-    if(o.button === MOUSE_LEFT) {
+    if (o.button === MOUSE_LEFT) {
         isPanning = false;
     }
     else if (o.button === MOUSE_RIGHT) {
