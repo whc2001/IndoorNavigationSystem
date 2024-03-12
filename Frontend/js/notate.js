@@ -3,7 +3,6 @@ const MOUSE_MIDDLE = 2;
 const MOUSE_RIGHT = 3;
 
 const nodeTypes = {
-    CONNECTOR: -1,
     CORRIDOR: 0,
     STAIR: 1,
     INSIDE_DOOR: 2,
@@ -13,7 +12,6 @@ const nodeTypes = {
 };
 
 const nodeColors = {
-    [nodeTypes.CONNECTOR]: "cyan",
     [nodeTypes.CORRIDOR]: "red",
     [nodeTypes.STAIR]: "blue",
     [nodeTypes.INSIDE_DOOR]: "green",
@@ -27,6 +25,7 @@ let btnOpenImage, btnExport;
 let optEdit, optInspect, optAttribute;
 let numGraphSize;
 let optConnector, optCorridor, optStair, optInsideDoor, optClassroom, optElevator, optOutsideDoor;
+let nodeTypeHotkeyTarget = [];
 let cvsMain, canvas;
 
 let id = 0;
@@ -70,8 +69,6 @@ function getSelectedOperation() {
 
 function getSelectedNodeType() {
     switch (true) {
-        case optConnector.checked:
-            return nodeTypes.CONNECTOR;
         case optCorridor.checked:
             return nodeTypes.CORRIDOR;
         case optStair.checked:
@@ -85,7 +82,7 @@ function getSelectedNodeType() {
         case optOutsideDoor.checked:
             return nodeTypes.OUTSIDE_DOOR;
         default:
-            return nodeTypes.CONNECTOR;
+            return nodeTypes.CORRIDOR;
     }
 }
 
@@ -363,6 +360,14 @@ function onKeyUp(o) {
 }
 
 function onKeyPress(o) {
+    console.log(o);
+    if(o.keyCode >= 49 && o.keyCode <= 54) {
+        const id = o.keyCode - 49;
+        console.log(id, nodeTypeHotkeyTarget[id]);
+        if (nodeTypeHotkeyTarget[id]) {
+            nodeTypeHotkeyTarget[id].click();
+        }   
+    }
 }
 
 function onGraphSizeChange() {
@@ -414,6 +419,8 @@ function init() {
     optClassroom = document.getElementById("optClassroom");
     optElevator = document.getElementById("optElevator");
     optOutsideDoor = document.getElementById("optOutsideDoor");
+    nodeTypeHotkeyTarget = [ optCorridor, optInsideDoor, optClassroom, optStair, optOutsideDoor, optElevator ];
+
     cvsMain = document.getElementById("cvsMain");
 
     btnOpenImage.addEventListener("click", function () {

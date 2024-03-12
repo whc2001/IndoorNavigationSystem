@@ -9,30 +9,29 @@
 <body>
     <div id="grpOperation">
         <input type="button" id="btnOpenImage" value="Open Image">
+        |
         <input type="radio" id="optEdit" name="operation" value="edit" checked>
-        <label for="optAdd">Edit</label>
+        <label for="optEdit">Edit</label>
         <input type="radio" id="optInspect" name="operation" value="inspect">
         <label for="optInspect">Inspect</label>
         <input type="radio" id="optAttribute" name="operation" value="attribute">
         <label for="optAttribute">Attribute</label>
-        Size: <input type="number" id="numGraphSize" min="1" max="10" value="2">
-        <input type="button" id="btnExport" value="Export">
+        | Size: <input type="number" id="numGraphSize" min="1" max="10" value="2">
+        | <input type="button" id="btnExport" value="Export">
     </div>
     <div id="grpType">
-        <input type="radio" id="optConnector" name="type" value="-1" checked>
-        <label for="optType1">Connector</label>
-        <input type="radio" id="optCorridor" name="type" value="0">
-        <label for="optType2">Corridor</label>
-        <input type="radio" id="optStair" name="type" value="1">
-        <label for="optType3">Stair</label>
+        <input type="radio" id="optCorridor" name="type" value="0" checked>
+        <label for="optCorridor">Corridor</label>
         <input type="radio" id="optInsideDoor" name="type" value="2">
-        <label for="optType3">Inside Door</label>
+        <label for="optInsideDoor">Inside Door</label>
         <input type="radio" id="optClassroom" name="type" value="3">
-        <label for="optType3">Classroom</label>
-        <input type="radio" id="optElevator" name="type" value="4">
-        <label for="optType3">Elevator</label>
+        <label for="optClassroom">Classroom</label>
+        <input type="radio" id="optStair" name="type" value="1">
+        <label for="optStair">Stair</label>
         <input type="radio" id="optOutsideDoor" name="type" value="5">
-        <label for="optType3">Outside Door</label>
+        <label for="optOutsideDoor">Outside Door</label>
+        <input type="radio" id="optElevator" name="type" value="4">
+        <label for="optElevator">Elevator</label>
     </div>
     <div id="grpCanvas">
         <canvas id="cvsMain" width="90%" height="80%" style="border: 1px solid #666;"></canvas>
