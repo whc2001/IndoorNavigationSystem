@@ -1,4 +1,3 @@
-
 <head>
     <link rel="stylesheet" href="css/notate.css">
     <script src="js/lib/fabric.min.js"></script>
@@ -7,19 +6,24 @@
 
 
 <body>
-    <div id="grpOperation">
+    <div id="grpFile" class="toolbar">
         <input type="button" id="btnOpenImage" value="Open Image">
+        <input type="button" id="btnImportJSON" value="Import JSON" disabled>
+        <input type="button" id="btnExportJSON" value="Export JSON" disabled>
         |
+        Building <input id="txtBuilding" disabled>
+        Floor <input id="txtFloor" disabled>
+    </div>
+    <div id="grpOperation" class="toolbar">
         <input type="radio" id="optEdit" name="operation" value="edit" checked>
         <label for="optEdit">Edit</label>
         <input type="radio" id="optInspect" name="operation" value="inspect">
         <label for="optInspect">Inspect</label>
         <input type="radio" id="optAttribute" name="operation" value="attribute">
         <label for="optAttribute">Attribute</label>
-        | Size: <input type="number" id="numGraphSize" min="1" max="10" value="2">
-        | <input type="button" id="btnExport" value="Export">
+        Size: <input type="number" id="numGraphSize" min="1" max="10" value="2">
     </div>
-    <div id="grpType">
+    <div id="grpType" class="toolbar">
         <input type="radio" id="optCorridor" name="type" value="0" checked>
         <label for="optCorridor">Corridor</label>
         <input type="radio" id="optInsideDoor" name="type" value="2">
@@ -34,6 +38,6 @@
         <label for="optElevator">Elevator</label>
     </div>
     <div id="grpCanvas">
-        <canvas id="cvsMain" width="90%" height="80%" style="border: 1px solid #666;"></canvas>
+        <canvas id="cvsMain" width="90%" height="80%" style="border: 1px solid #666;" tabindex="0"></canvas>
     </div>
 </body>
