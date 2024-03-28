@@ -11,6 +11,11 @@ const nodeTypes = {
     OUTSIDE_DOOR: 5,
 };
 
+const nodeAttributeName = {
+    [nodeTypes.CLASSROOM]: "classroom #",
+    [nodeTypes.OUTSIDE_DOOR]: "node ID of outdoor map"
+}
+
 const nodeColors = {
     [nodeTypes.CORRIDOR]: "red",
     [nodeTypes.STAIR]: "blue",
@@ -20,13 +25,17 @@ const nodeColors = {
     [nodeTypes.OUTSIDE_DOOR]: "purple",
 };
 
+const fileNamePattern = /^(?<building>[^\s]+)_(?<floor>[^\s]+)\..+$/s;
+
 let grpCanvas;
-let btnOpenImage, btnExport;
+let btnOpenImage, btnImportJSON, btnExportJSON;
+let txtBuilding, txtFloor;
 let optEdit, optInspect, optAttribute;
 let numGraphSize;
 let optConnector, optCorridor, optStair, optInsideDoor, optClassroom, optElevator, optOutsideDoor;
 let nodeTypeHotkeyTarget = [];
 let cvsMain, canvas;
+let image;
 
 let id = 0;
 let isPanning = false;
@@ -87,7 +96,22 @@ function getSelectedNodeType() {
 }
 
 function exportGraph() {
-    const nodes = [];
+    const building = txtBuilding.value.trim();
+    if (!building) {
+        alert("Please enter building!");
+        return;
+    }
+    const floor = txtFloor.value.trim();
+    if (!floor) {
+        alert("Please enter floor!");
+        return;
+    }
+
+    let ret = {};
+    ret["building"] = building;
+    ret["floor"] = floor;
+
+    let nodes = [];
     canvas.getObjects().forEach(obj => {
         if (obj.graphProperties?.type === "node") {
             nodes.push({
@@ -105,7 +129,10 @@ function exportGraph() {
             });
         }
     });
-    return JSON.stringify(nodes, null, 2);
+
+    ret["nodes"] = nodes;
+
+    return JSON.stringify(ret, null, 2);
 }
 
 function placeNewNode(type, x, y) {
@@ -235,15 +262,17 @@ function deleteConnection(edge) {
 }
 
 function resizeGraph() {
-    canvas.getObjects().forEach(obj => {
-        if (obj.graphProperties?.type === "node") {
-            obj.set({ radius: getNodeSize() });
-        }
-        else if (obj.graphProperties?.type === "edge") {
-            obj.set({ strokeWidth: getConnectionSize() });
-        }
-    });
-    canvas.renderAll();
+    if (canvas) {
+        canvas.getObjects().forEach(obj => {
+            if (obj.graphProperties?.type === "node") {
+                obj.set({ radius: getNodeSize() });
+            }
+            else if (obj.graphProperties?.type === "edge") {
+                obj.set({ strokeWidth: getConnectionSize() });
+            }
+        });
+        canvas.renderAll();
+    }
 }
 
 function setNodeMovable(canMove) {
@@ -278,9 +307,14 @@ function onCanvasMouseDown(o) {
             }
             else if (operation === "attribute") {
                 if (target && target.graphProperties.type === "node") {
-                    const data = prompt("Enter attribute data", target.appProperties.data);
-                    if (data) {
-                        target.appProperties.data = data;
+                    console.log(target.appProperties.type);
+                    const attributeName = nodeAttributeName[target.appProperties.type];
+                    console.log(attributeName);
+                    if (attributeName) {
+                        const data = prompt("Enter attribute data: " + nodeAttributeName[target.appProperties.type], target.appProperties.data);
+                        if (data) {
+                            target.appProperties.data = data;
+                        }
                     }
                 }
             }
@@ -360,13 +394,13 @@ function onKeyUp(o) {
 }
 
 function onKeyPress(o) {
-    console.log(o);
-    if(o.keyCode >= 49 && o.keyCode <= 54) {
-        const id = o.keyCode - 49;
-        console.log(id, nodeTypeHotkeyTarget[id]);
-        if (nodeTypeHotkeyTarget[id]) {
-            nodeTypeHotkeyTarget[id].click();
-        }   
+    if (document.activeElement === document.body) { // Not focused on textbox
+        if (o.keyCode >= 49 && o.keyCode <= 54) {
+            const id = o.keyCode - 49;
+            if (nodeTypeHotkeyTarget[id]) {
+                nodeTypeHotkeyTarget[id].click();
+            }
+        }
     }
 }
 
@@ -399,11 +433,34 @@ function initCanvas(width, height) {
 
 }
 
+function onLoadImage() {
+    initCanvas(cvsMain.clientWidth, cvsMain.clientHeight);
+    // make image centered on the canvas, and scale it to fit the canvas to show the whole image
+    const scale = Math.min(canvas.width / image.width, canvas.height / image.height);
+    canvas.setBackgroundImage(new fabric.Image(image), canvas.renderAll.bind(canvas), {
+        scaleX: scale,
+        scaleY: scale,
+        top: canvas.height / 2,
+        left: canvas.width / 2,
+        originX: "center",
+        originY: "center",
+        selectable: false,
+    });
+    btnImportJSON.removeAttribute("disabled");
+    btnExportJSON.removeAttribute("disabled");
+    txtBuilding.removeAttribute("disabled");
+    txtFloor.removeAttribute("disabled");
+}
+
 function init() {
     grpCanvas = document.getElementById("grpCanvas");
 
     btnOpenImage = document.getElementById("btnOpenImage");
-    btnExport = document.getElementById("btnExport");
+    btnImportJSON = document.getElementById("btnImportJSON");
+    btnExportJSON = document.getElementById("btnExportJSON");
+
+    txtBuilding = document.getElementById("txtBuilding");
+    txtFloor = document.getElementById("txtFloor");
 
     optEdit = document.getElementById("optEdit");
     optInspect = document.getElementById("optInspect");
@@ -419,7 +476,7 @@ function init() {
     optClassroom = document.getElementById("optClassroom");
     optElevator = document.getElementById("optElevator");
     optOutsideDoor = document.getElementById("optOutsideDoor");
-    nodeTypeHotkeyTarget = [ optCorridor, optInsideDoor, optClassroom, optStair, optOutsideDoor, optElevator ];
+    nodeTypeHotkeyTarget = [optCorridor, optInsideDoor, optClassroom, optStair, optOutsideDoor, optElevator];
 
     cvsMain = document.getElementById("cvsMain");
 
@@ -432,22 +489,19 @@ function init() {
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function (e) {
-                    const img = new Image();
-                    img.onload = function () {
-                        initCanvas(cvsMain.clientWidth, cvsMain.clientHeight);
-                        // make image centered on the canvas, and scale it to fit the canvas to show the whole image
-                        const scale = Math.min(canvas.width / img.width, canvas.height / img.height);
-                        canvas.setBackgroundImage(new fabric.Image(img), canvas.renderAll.bind(canvas), {
-                            scaleX: scale,
-                            scaleY: scale,
-                            top: canvas.height / 2,
-                            left: canvas.width / 2,
-                            originX: "center",
-                            originY: "center",
-                            selectable: false,
-                        });
-                    };
-                    img.src = e.target.result;
+                    // Load image to canvas
+                    image = new Image();
+                    image.onload = onLoadImage;
+                    image.src = e.target.result;
+
+                    const fileNameMatch = file.name.match(fileNamePattern);
+                    if (!fileNameMatch) {
+                        alert('Filename is not in "Building_Floor" format, please manually specify');
+                    }
+                    else {
+                        txtBuilding.value = fileNameMatch.groups.building;
+                        txtFloor.value = fileNameMatch.groups.floor;
+                    }
                 };
                 reader.readAsDataURL(file);
             }
@@ -455,9 +509,10 @@ function init() {
         fileInput.click();
     });
 
-    btnExport.addEventListener("click", function () {
+    btnExportJSON.addEventListener("click", function () {
         const json = exportGraph();
-        console.log(json);
+        if (json)
+            console.log(json);
         /*const blob = new Blob([json], { type: "application/json" });
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
