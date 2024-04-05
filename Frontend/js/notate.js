@@ -151,6 +151,7 @@ function exportGraph() {
                     const peer = line.graphProperties.connects.find(i => i !== obj);
                     return peer.appProperties.id;
                 }),
+                data: obj.appProperties.data,
             });
         }
     });
