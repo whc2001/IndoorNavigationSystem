@@ -18,6 +18,10 @@ body {
     box-sizing: border-box;
 }
 
+.toolbar input[type="button"] {
+    margin: 0 5px 0 5px;
+}
+
 .toolbar input[type="radio"] {
     margin: 0 10px;
 }

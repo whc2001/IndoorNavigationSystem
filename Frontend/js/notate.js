@@ -13,7 +13,8 @@ const nodeTypes = {
 
 const nodeAttributeName = {
     [nodeTypes.CLASSROOM]: "classroom #",
-    [nodeTypes.OUTSIDE_DOOR]: "node ID of outdoor map"
+    [nodeTypes.OUTSIDE_DOOR]: "node ID of outdoor map",
+    [nodeTypes.ELEVATOR]: "node IDs of adjacent level elevator",
 }
 
 const nodeColors = {
@@ -51,6 +52,13 @@ function getNodeSize() {
 
 function getConnectionSize() {
     return graphSizeValue / 1.25;
+}
+
+function highlightNode(node, highlight) {
+    node.set({ 
+        stroke: highlight ? "white" : "transparent",
+        strokeWidth: highlight ? getConnectionSize() / 2 : 0,
+    });
 }
 
 function hasConnection(node1, node2) {  // check if two nodes are connected, ignore direction
@@ -107,6 +115,22 @@ function exportGraph() {
         return;
     }
 
+    // Check if all special nodes have attributes
+    let hasError = false;
+    canvas.getObjects().forEach(obj => {
+        if (obj.graphProperties?.type === "node") {
+            if(nodeAttributeName[obj.appProperties.type] && !obj.appProperties.data) {
+                highlightNode(obj, true);
+                hasError = true;
+            }
+        }
+    });
+    if (hasError) {
+        canvas.renderAll();
+        alert("Some nodes are missing mandatory attributes, please check the highlighted nodes!");
+        return;
+    }
+
     let ret = {};
     ret["building"] = building;
     ret["floor"] = floor;
@@ -143,12 +167,12 @@ function placeNewNode(type, x, y) {
         top: y,
         lockMovementX: true,
         lockMovementY: true,
-        shadow: new fabric.Shadow({
+        /*shadow: new fabric.Shadow({
             color: "gray",
             blur: 2,
             offsetX: 2,
             offsetY: 2
-        }),
+        }),*/
     });
     node.hasControls = false;
     node.hasBorders = false;
@@ -314,6 +338,8 @@ function onCanvasMouseDown(o) {
                         const data = prompt("Enter attribute data: " + nodeAttributeName[target.appProperties.type], target.appProperties.data);
                         if (data) {
                             target.appProperties.data = data;
+                            highlightNode(target, false);
+                            canvas.renderAll();
                         }
                     }
                 }
