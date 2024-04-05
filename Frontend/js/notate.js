@@ -15,6 +15,7 @@ const nodeAttributeName = {
     [nodeTypes.CLASSROOM]: "classroom #",
     [nodeTypes.OUTSIDE_DOOR]: "node ID of outdoor map",
     [nodeTypes.ELEVATOR]: "node IDs of adjacent level elevator",
+    [nodeTypes.STAIR]: "node IDs of adjacent level stair",
 }
 
 const nodeColors = {
