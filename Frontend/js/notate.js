@@ -109,6 +109,48 @@ function getSelectedNodeType() {
     }
 }
 
+function importGraph(json) {
+    // {"building":"ACW","floor":"1","nodes":[{"id":0,"type":0,"name":"Node0","coord":{"x":"855.1000","y":"544.5623"},"adjacents":[1]},{"id":1,"type":0,"name":"Node1","coord":{"x":"1125.5578","y":"1471.4686"},"adjacents":[0,2]},{"id":2,"type":0,"name":"Node2","coord":{"x":"1711.0544","y":"1064.4617"},"adjacents":[1,3,4]},{"id":3,"type":0,"name":"Node3","coord":{"x":"2522.4279","y":"654.4839"},"adjacents":[2,4]},{"id":4,"type":0,"name":"Node4","coord":{"x":"2873.1314","y":"1483.3521"},"adjacents":[3,2]}]}
+
+    try {
+        txtBuilding.value = json.building;
+        txtFloor.value = json.floor;
+
+        let maxNodeId = 0;
+
+        json.nodes.forEach(node => {
+            const newNode = placeNewNode(node.type, parseFloat(node.coord.x), parseFloat(node.coord.y));
+            newNode.appProperties.id = node.id;
+            newNode.appProperties.name = node.name;
+            newNode.appProperties.data = node.data;
+            maxNodeId = Math.max(maxNodeId, node.id);
+        });
+
+        const nodeDict = {};
+        canvas.getObjects().forEach(obj => {
+            if (obj.graphProperties?.type === "node") {
+                nodeDict[obj.appProperties.id] = obj;
+            }
+        });
+        json.nodes.forEach(node => {
+            const currentNode = nodeDict[node.id];
+            node.adjacents.forEach(adjacentId => {
+                const adjacentNode = nodeDict[adjacentId];
+                if (adjacentNode) {
+                    beginConnecting(currentNode);
+                    endConnecting(adjacentNode);
+                }
+            });
+        });
+
+        id = maxNodeId + 1;
+    }
+    catch (e) {
+        alert("Import failed: " + e);
+        canvas.remove(...canvas.getObjects());
+    }
+}
+
 function exportGraph() {
     const building = txtBuilding.value.trim();
     if (!building) {
@@ -221,6 +263,8 @@ function placeNewNode(type, x, y) {
     });
     canvas.add(node);
     canvas.bringToFront(node);
+
+    return node;
 }
 
 function beginConnecting(startNode) {
@@ -592,6 +636,39 @@ function init() {
             a.download = `${txtBuilding.value.trim()}_${txtFloor.value.trim()}.json`;
             a.click();
         }
+    });
+
+    btnImportJSON.addEventListener("click", function () {
+        if (canvas && canvas.getObjects().length > 0) {
+            if (!confirm("This will clear the current graph, continue?")) {
+                return;
+            }
+        }
+
+        const fileInput = document.createElement("input");
+        fileInput.type = "file";
+        fileInput.accept = "application/json";
+        fileInput.onchange = function () {
+            const file = fileInput.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    let json;
+                    try {
+                        json = JSON.parse(e.target.result);
+                    }
+                    catch {
+                        alert("JSON parsing failed!");
+                        return;
+                    }
+                    canvas.remove(...canvas.getObjects());
+                    importGraph(json);
+                    canvas.renderAll();
+                };
+                reader.readAsText(file);
+            }
+        };
+        fileInput.click();
     });
 }
 
