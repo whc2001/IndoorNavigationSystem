@@ -169,12 +169,12 @@ function placeNewNode(type, x, y) {
         top: y,
         lockMovementX: true,
         lockMovementY: true,
-        /*shadow: new fabric.Shadow({
-            color: "gray",
-            blur: 2,
-            offsetX: 2,
-            offsetY: 2
-        }),*/
+        // shadow: new fabric.Shadow({
+        //     color: "gray",
+        //     blur: 2,
+        //     offsetX: 2,
+        //     offsetY: 2
+        // }),
     });
     node.hasControls = false;
     node.hasBorders = false;
@@ -201,7 +201,7 @@ function placeNewNode(type, x, y) {
         canvas.renderAll();
     });
     canvas.add(node);
-    canvas.moveTo(node, 999);
+    canvas.bringToFront(node);
 }
 
 function beginConnecting(startNode) {
@@ -211,12 +211,12 @@ function beginConnecting(startNode) {
         stroke: "black",
         strokeWidth: getConnectionSize(),
         selectable: false,
-        shadow: new fabric.Shadow({
-            color: "gray",
-            blur: 2,
-            offsetX: 2,
-            offsetY: 2
-        }),
+        // shadow: new fabric.Shadow({
+        //     color: "gray",
+        //     blur: 2,
+        //     offsetX: 2,
+        //     offsetY: 2
+        // }),
     });
     connectWire.perPixelTargetFind = true;
 
@@ -224,7 +224,7 @@ function beginConnecting(startNode) {
     connectWire.graphProperties.type = "edge";
 
     canvas.add(connectWire);
-    canvas.moveTo(connectWire, -999);
+    canvas.sendToBack(connectWire);
 }
 
 function endConnecting(endNode) {
@@ -460,8 +460,8 @@ function initCanvas(width, height) {
         stopContextMenu: true,
     });
     canvas.selection = false;
-    fabric.Object.prototype.originX = "top";
-    fabric.Object.prototype.originY = "left";
+    fabric.Object.prototype.originX = "center";
+    fabric.Object.prototype.originY = "center";
 
     canvas.on("mouse:down", onCanvasMouseDown);
     canvas.on("mouse:move", onCanvasMouseMove);
