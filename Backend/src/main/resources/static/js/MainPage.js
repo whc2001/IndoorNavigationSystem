@@ -4,7 +4,7 @@ var apiServer = isProduction ? "https://indoornav.haoc.wang" : "http://127.0.0.1
 var button = document.getElementById('jumpButton');1
 
 button.addEventListener('click', function () {
-    var targetUrl = '/Main/MainPage';
+    var targetUrl = apiServer+'/Main/MainPage';
 
     window.location.href = targetUrl;
 });
@@ -105,6 +105,10 @@ document.getElementById('NavigateButton').addEventListener('click', function (ev
         contentType: 'application/json',
         data: JSON.stringify(formData),
         success: function (response) {
+            if (response.trim() === '') {
+                alert('room code is invalid, please enter again');
+                return;
+            }
             var base64Image = 'data:image/jpeg;base64,' + response;
             imgElement.src = base64Image;
             var container = document.getElementById('imageContainer2');
@@ -257,5 +261,63 @@ function scrollToBottom() {
         behavior: 'smooth'
     });
 }
+
+$(document).ready(function() {
+    $('#nameSelect, #floorSelect').change(function() {
+        var selectedBuilding = $('#nameSelect').val();
+        var selectedFloor = $('#floorSelect').val();
+
+        if (selectedBuilding !== '' && selectedFloor !== '') {
+            console.log('fetching rooms');
+            fetchAndDisplayRooms(selectedBuilding, selectedFloor);
+        }
+    });
+    function fetchAndDisplayRooms(building, floor) {
+        var roomsData ;
+        var formData = {
+            name: building,
+            floor: floor,
+        };
+        $.ajax({
+            url: apiServer + '/Main/GetRooms',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(formData),
+            success: function(data) {
+                updateRoomsTable(data);
+            },
+            error: function() {
+                alert('Error fetching rooms data');
+            }
+        });
+
+
+    }
+    function updateRoomsTable(rooms) {
+        $('#accessibleRoomsTable tbody').empty();
+
+        var columnsPerRow = 6;
+
+        var numRows = Math.ceil(rooms.length / columnsPerRow);
+
+        for (var rowIndex = 0; rowIndex < numRows; rowIndex++) {
+            var rowHtml = '<tr>';
+
+            for (var colIndex = 0; colIndex < columnsPerRow; colIndex++) {
+                var roomIndex = rowIndex * columnsPerRow + colIndex;
+
+                if (roomIndex < rooms.length) {
+                    rowHtml += '<td>' + rooms[roomIndex] + '</td>';
+                } else {
+                    rowHtml += '<td></td>';
+                }
+            }
+
+            rowHtml += '</tr>';
+
+            $('#accessibleRoomsTable tbody').append(rowHtml);
+        }
+    }
+});
 
 document.getElementById('scrollToBottom').addEventListener('click', scrollToBottom);

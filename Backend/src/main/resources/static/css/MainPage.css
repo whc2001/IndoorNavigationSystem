@@ -86,8 +86,31 @@ th, td {
 .form-container {
     display: flex;
     justify-content: space-between;
-    max-width: 800px;
     margin: 20px auto;
+}
+
+.TableContainer {
+    max-width: 400px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    padding: 20px;
+    margin: 20px auto;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.TableContainer p {
+    margin-top: 0;
+}
+
+.TableContainer table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.TableContainer th, .TableContainer td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ccc;
 }
 
 #scrollToTop {
@@ -124,4 +147,13 @@ th, td {
     text-align: center;
     line-height: 30px;
     z-index: 999;
+}
+.input-wrapper {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+
+}
+.input-wrapper input {
+    margin-bottom: 10px;
 }

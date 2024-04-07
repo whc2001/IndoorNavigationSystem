@@ -4,14 +4,14 @@ public class NavigationInformation {
 
     public String name;
     public Integer floor;
-    public Integer start;
-    public Integer end;
+    public String start;
+    public String end;
 
     public NavigationInformation() {
 
     }
 
-    public NavigationInformation(String name, Integer floor, Integer start, Integer end) {
+    public NavigationInformation(String name, Integer floor, String start, String end) {
         this.name = name;
         this.floor = floor;
         this.start = start;
@@ -26,11 +26,11 @@ public class NavigationInformation {
         return floor;
     }
 
-    public Integer getStart() {
+    public String getStart() {
         return start;
     }
 
-    public Integer getEnd() {
+    public String getEnd() {
         return end;
     }
 
@@ -42,11 +42,11 @@ public class NavigationInformation {
         this.floor = floor;
     }
 
-    public void setStart(Integer start) {
+    public void setStart(String start) {
         this.start = start;
     }
 
-    public void setEnd(Integer end) {
+    public void setEnd(String end) {
         this.end = end;
     }
 }

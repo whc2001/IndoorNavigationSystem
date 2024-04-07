@@ -114,6 +114,59 @@ public class MainController {
         response.getWriter().write(htmlContent);
     }
 
+    @PostMapping("/GetRooms")
+    public ArrayList<String> GetRooms(@RequestBody NavigationInformation NI) {
+        String name = NI.name;
+        Integer floor = NI.floor;
+        ArrayList<Graph> result = new ArrayList<>(graphRepository.findByNameAndFloor(name, floor));
+        ArrayList<String> rooms = new ArrayList<>();
+
+        for(Node n : result.get(0).getGraph_node()) {
+            if(n.getName()!=null) {
+                rooms.add(n.getName());
+            }
+        }
+        quickSort(rooms, 0, rooms.size()-1);
+        return rooms;
+    }
+
+    static void quickSort(ArrayList<String> arr, int low, int high) {
+        if (low < high) {
+            int pi = partition(arr, low, high);
+            quickSort(arr, low, pi - 1);
+            quickSort(arr, pi + 1, high);
+        }
+    }
+
+    static int partition(ArrayList<String> arr, int low, int high) {
+        String pivot = arr.get(high);
+
+        int i = low - 1;
+
+        for (int j = low; j < high; j++) {
+            if (compareRooms(arr.get(j), pivot) < 0) {
+                i++;
+
+                String temp = arr.get(i);
+                arr.set(i, arr.get(j));
+                arr.set(j, temp);
+            }
+        }
+        String temp = arr.get(i + 1);
+        arr.set(i + 1, arr.get(high));
+        arr.set(high, temp);
+
+        return i + 1;
+    }
+    static int compareRooms(String room1, String room2) {
+        int roomNumber1 = Integer.parseInt(room1.replaceAll("[^0-9]", ""));
+        int roomNumber2 = Integer.parseInt(room2.replaceAll("[^0-9]", ""));
+        if (roomNumber1 == roomNumber2) {
+            return room1.replaceAll("[0-9]", "").compareTo(room2.replaceAll("[0-9]", ""));
+        }
+        return roomNumber1 - roomNumber2;
+    }
+
     @PostMapping("/Load")
     public String Load(@RequestBody NavigationInformation NI) throws IOException {
         String name = NI.name;
@@ -139,17 +192,31 @@ public class MainController {
     public String Navigate(@RequestBody NavigationInformation NI) throws IOException {
         String name = NI.name;
         Integer floor = NI.floor;
-        Integer start = NI.start;
-        Integer end = NI.end;
+        String start = NI.start;
+        String end = NI.end;
         ArrayList<Graph> result = new ArrayList<>(graphRepository.findByNameAndFloor(name, floor));
-
-        BufferedImage retImg = algorithm.Navigate(result.get(0), result.get(0).getGraph_node().get(start), result.get(0).getGraph_node().get(end), "src/main/resources/static/result/");
+        Node s = null;
+        for(Node n : result.get(0).getGraph_node()) {
+            if (n.getName()!=null&&n.getName().equals(start)) {
+                s = n;
+            }
+        }
+        Node e = null;
+        for(Node n : result.get(0).getGraph_node()) {
+            if (n.getName()!=null&&n.getName().equals(end)) {
+                e = n;
+            }
+        }
+        if(s == null || e == null) {
+            return "";
+        }
+        BufferedImage retImg = algorithm.Navigate(result.get(0), s, e, "src/main/resources/static/result/");
 
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
-            ImageIO.write(retImg, "jpg", outputStream);
+            ImageIO.write(retImg, "png", outputStream);
             return java.util.Base64.getEncoder().encodeToString(outputStream.toByteArray());
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException ex) {
+            ex.printStackTrace();
             return "";
         }
     }

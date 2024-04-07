@@ -33,10 +33,20 @@
             <select id="floorSelect2" name="floor" required>
                 <option value="">Select Floor</option>
             </select>
-            <input type="number" id = "start" name="start" placeholder="start point" required>
-            <input type="number" id = "end" name="end" placeholder="destination" required>
+            <div class="input-wrapper">
+                <input type="text" id="start" name="start" placeholder="start point" required>
+                <input type="text" id="end" name="end" placeholder="destination" required>
+            </div>
             <button type="submit" id = "NavigateButton">Navigate</button>
         </form>
+
+        <div class="TableContainer">
+            <p>Currently Accessible Rooms:</p>
+            <table id="accessibleRoomsTable" border="1">
+                <tbody>
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <div id = "imageContainer1">

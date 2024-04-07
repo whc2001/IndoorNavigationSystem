@@ -1046,6 +1046,9 @@ public class Algorithm {
                     n1.position = Double.parseDouble((String) m.get("data"));
                 } else {
                     n1.name = (String) m.get("data");
+                    if(n1.name.equals("?")){
+                        continue;
+                    }
                 }
             }
             finder.put(n1.nodeId, n1);
