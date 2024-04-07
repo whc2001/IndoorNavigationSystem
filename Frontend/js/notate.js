@@ -131,7 +131,6 @@ function exportGraph() {
     }
 
     // Check if all special nodes have attributes
-    let hasError = false;
     let missingAttribute = false;
     canvas.getObjects().forEach(obj => {
         if (obj.graphProperties?.type === "node") {
