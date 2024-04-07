@@ -47,6 +47,11 @@ let connectStartNode = null;
 let connectWire = null;
 let graphSizeValue = 2;
 
+function recalculateGraphSize(scale) {
+    graphSizeValue = Math.round(-8 * scale + 22.31);
+    numGraphSize.value = graphSizeValue;
+}
+
 function getNodeSize() {
     return graphSizeValue;
 }
@@ -511,6 +516,8 @@ function onLoadImage() {
     const translateX = (grpCanvas.clientWidth - image.width * scale) / 2;
     const translateY = (grpCanvas.clientHeight - image.height * scale) / 2;
     canvas.setViewportTransform([scale, 0, 0, scale, translateX, translateY]);
+
+    recalculateGraphSize(scale);
 
     btnImportJSON.removeAttribute("disabled");
     btnExportJSON.removeAttribute("disabled");
