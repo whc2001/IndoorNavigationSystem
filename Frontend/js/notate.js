@@ -56,7 +56,7 @@ function getConnectionSize() {
 }
 
 function highlightNode(node, highlight) {
-    node.set({ 
+    node.set({
         stroke: highlight ? "white" : "transparent",
         strokeWidth: highlight ? getConnectionSize() / 2 : 0,
     });
@@ -120,7 +120,7 @@ function exportGraph() {
     let hasError = false;
     canvas.getObjects().forEach(obj => {
         if (obj.graphProperties?.type === "node") {
-            if(nodeAttributeName[obj.appProperties.type] && !obj.appProperties.data) {
+            if (nodeAttributeName[obj.appProperties.type] && !obj.appProperties.data) {
                 highlightNode(obj, true);
                 hasError = true;
             }
@@ -361,9 +361,11 @@ function onCanvasMouseDown(o) {
                 canvas.renderAll();
             }
             else if (!target) {
-                const type = getSelectedNodeType();
-                placeNewNode(type, pointer.x, pointer.y);
-                canvas.renderAll();
+                if (pointer.x >= 0 && pointer.y >= 0 && pointer.x <= canvas.backgroundImage.width && pointer.y <= canvas.backgroundImage.height) {
+                    const type = getSelectedNodeType();
+                    placeNewNode(type, pointer.x, pointer.y);
+                    canvas.renderAll();
+                }
             }
         }
     }
@@ -398,6 +400,17 @@ function onCanvasMouseUp(o) {
     }
 }
 
+function onCanvasObjectMoving(o) {
+    // Limit node movement within background image
+    const obj = o.target;
+    if (obj.graphProperties?.type === "node") {
+        if (obj.left < 0) obj.left = 0;
+        if (obj.top < 0) obj.top = 0;
+        if (obj.left > canvas.backgroundImage.width) obj.left = canvas.backgroundImage.width;
+        if (obj.top > canvas.backgroundImage.height) obj.top = canvas.backgroundImage.height;
+    }
+}
+
 function onMouseWheel(o) {
     var delta = o.e.deltaY;
     var zoom = canvas.getZoom();
@@ -408,6 +421,7 @@ function onMouseWheel(o) {
     o.e.preventDefault();
     o.e.stopPropagation();
 }
+
 
 function onKeyDown(o) {
     if (getSelectedOperation() === "edit" && o.keyCode === 18) {
@@ -446,13 +460,14 @@ function initCanvas(width, height) {
         stopContextMenu: true,
     });
     canvas.selection = false;
-    fabric.Object.prototype.originX = "center";
-    fabric.Object.prototype.originY = "center";
+    fabric.Object.prototype.originX = "top";
+    fabric.Object.prototype.originY = "left";
 
     canvas.on("mouse:down", onCanvasMouseDown);
     canvas.on("mouse:move", onCanvasMouseMove);
     canvas.on("mouse:up", onCanvasMouseUp);
     canvas.on("mouse:wheel", onMouseWheel);
+    canvas.on("object:moving", onCanvasObjectMoving);
 
     //grpCanvas.tabIndex = 1000;
     document.addEventListener("keydown", onKeyDown, false);
@@ -462,18 +477,25 @@ function initCanvas(width, height) {
 }
 
 function onLoadImage() {
-    initCanvas(cvsMain.clientWidth, cvsMain.clientHeight);
-    // make image centered on the canvas, and scale it to fit the canvas to show the whole image
-    const scale = Math.min(canvas.width / image.width, canvas.height / image.height);
+    //initCanvas(image.width, image.height);
+    initCanvas(grpCanvas.clientWidth, grpCanvas.clientHeight);
+    //canvas.setDimensions({ width: grpCanvas.clientWidth, height: grpCanvas.clientHeight });
+
     canvas.setBackgroundImage(new fabric.Image(image), canvas.renderAll.bind(canvas), {
-        scaleX: scale,
-        scaleY: scale,
-        top: canvas.height / 2,
-        left: canvas.width / 2,
-        originX: "center",
-        originY: "center",
+        scaleX: 1,
+        scaleY: 1,
+        left: 0,
+        top: 0,
+        originX: 'left',
+        originY: 'top',
         selectable: false,
     });
+
+    const scale = Math.min(grpCanvas.clientWidth / image.width, grpCanvas.clientHeight / image.height);
+    const translateX = (grpCanvas.clientWidth - image.width * scale) / 2;
+    const translateY = (grpCanvas.clientHeight - image.height * scale) / 2;
+    canvas.setViewportTransform([scale, 0, 0, scale, translateX, translateY]);
+
     btnImportJSON.removeAttribute("disabled");
     btnExportJSON.removeAttribute("disabled");
     txtBuilding.removeAttribute("disabled");
