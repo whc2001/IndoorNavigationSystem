@@ -24,7 +24,7 @@ public class FileUtils {
     }
 
     public static String getFileName(String buildingName, int floor) {
-        return buildingName + "Floor" + floor + ".jpg";
+        return buildingName + "_" + floor + ".jpg";
     }
 
     public static String getMapPath(String fileName) {

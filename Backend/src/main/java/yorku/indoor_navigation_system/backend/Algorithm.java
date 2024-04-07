@@ -1,5 +1,7 @@
 package yorku.indoor_navigation_system.backend;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import net.sourceforge.tess4j.ITesseract;
 import net.sourceforge.tess4j.Tesseract;
 import net.sourceforge.tess4j.TesseractException;
@@ -13,6 +15,7 @@ import javax.imageio.ImageIO;
 import javax.imageio.stream.ImageOutputStream;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,6 +30,30 @@ public class Algorithm {
     private GraphRepository graphRepository;
     @Autowired
     private ResourceLoader resourceLoader;
+
+    public static String convertFileToString(File file) {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        try {
+            FileInputStream fileInputStream = new FileInputStream(file);
+            InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, "UTF-8");
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                stringBuilder.append(line);
+                stringBuilder.append("\n");
+            }
+
+            bufferedReader.close();
+            inputStreamReader.close();
+            fileInputStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return stringBuilder.toString();
+    }
 
     public ArrayList<Node> extractAndConnectNodes(String graphPath) {
         ArrayList<Node> result = extractNode(graphPath);
@@ -45,7 +72,7 @@ public class Algorithm {
         BufferedImage image = null;
 //        Resource resource = resourceLoader.getResource(g.getMapPath());
         try {
-            image = (BufferedImage) FileUtils.openResImage(g.getMapPath());
+            image = (BufferedImage) FileUtils.openResImage(FileUtils.getMapPath(FileUtils.getFileName(g.getName(), g.getFloor())));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -53,9 +80,9 @@ public class Algorithm {
         d.drawNode();
         String resultPath = "src/main/resources/static/mapWithNode/";
         try {
-            File outputFile = new File(resultPath + g.getName() + "Floor" + g.getFloor() + ".jpg");
+            File outputFile = new File(resultPath + g.getName() + "_" + g.getFloor() + ".jpg");
             ImageIO.write(image, "jpg", outputFile);
-            System.out.println("result is store into: " + resultPath + g.getName() + "Floor" + g.getFloor() + ".jpg");
+            System.out.println("result is store into: " + resultPath + g.getName() + "_" + g.getFloor() + ".jpg");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -113,7 +140,6 @@ public class Algorithm {
     public BufferedImage Navigate(Graph g, Node start, Node des, String resultPath) {
         System.out.println("Start navigate from " + start.getC() + " to " + des.getC());
         BufferedImage image = null;
-
         try {
             image = (BufferedImage) FileUtils.openResImage(FileUtils.getMapPath(FileUtils.getFileName(g.getName(), g.getFloor())));
         } catch (IOException e) {
@@ -121,7 +147,14 @@ public class Algorithm {
         }
         Draw d = new Draw(calculateRoute(g, start, des), image);
         d.drawRoute();
-
+        File outputFile = new File(resultPath+"result.png");
+        try {
+            ImageIO.write(image, "png", outputFile);
+            System.out.println("图像保存成功！");
+        } catch (IOException e) {
+            System.out.println("图像保存失败：" + e.getMessage());
+        }
+        System.out.println(image);
         return image;
     }
 
@@ -988,6 +1021,45 @@ public class Algorithm {
 
         }
         return false;
+    }
+
+    public void BuildGraphV2(String json) {
+        Graph g = new Graph();
+        g.graph_node = new ArrayList<>();
+        Type type = new TypeToken<Map<String, Object>>(){}.getType();
+        Map<String, Object> myMap = new Gson().fromJson(json, type);
+        g.name = (String) myMap.get("building");
+        g.floor = Integer.parseInt((String) myMap.get("floor"));
+        ArrayList<?> nodes = (ArrayList<?>) myMap.get("nodes");
+        Map<Double,Node> finder = new HashMap<Double,Node>();
+        for(Object node : nodes) {
+            Map m = (Map<?, ?>) node;
+            Node n1 = new Node();
+            n1.type = ((Double)m.get("type")).intValue();
+            n1.nodeId = (double) m.get("id");
+            Map<String, Object> coord = (Map<String, Object>) m.get("coord");
+            Coordinate c = new Coordinate(((Double)(Double.parseDouble((String)coord.get("x")))).intValue(), ((Double)(Double.parseDouble((String)coord.get("y")))).intValue());
+            coordinateRepository.save(c);
+            n1.c = c;
+            if(m.get("data") != null) {
+                if(n1.type == 1||n1.type == 4||n1.type == 5) {
+                    n1.position = Double.parseDouble((String) m.get("data"));
+                } else {
+                    n1.name = (String) m.get("data");
+                }
+            }
+            finder.put(n1.nodeId, n1);
+            nodeRepository.save(n1);
+            g.graph_node.add(n1);
+        }
+        for(Object node : nodes){
+            Map m = (Map<?, ?>) node;
+            Node n1 = finder.get((double) m.get("id"));
+            for(double d: (ArrayList<Double>)((Map<?, ?>) node).get("adjacents")) {
+                n1.Nodes.add(finder.get(d));
+            }
+        }
+        graphRepository.save(g);
     }
 
 //    public void serializeObjectToFile(Serializable object, String filePath) {

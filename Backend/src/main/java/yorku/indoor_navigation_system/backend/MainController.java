@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,11 +20,15 @@ import java.util.Random;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/Main")
 public class MainController {
 
     @Autowired
     private GraphRepository graphRepository;
+    @Autowired
+    private NodeRepository nodeRepository;
+    @Autowired
+    private CoordinateRepository coordinateRepository;
     @Autowired
     private Algorithm algorithm;
     @Autowired
@@ -50,8 +56,8 @@ public class MainController {
         return buildingList;
     }
 
-    @GetMapping("/SetPage")
-    public void test() {
+    @GetMapping("/SetPageOld")
+    public void SetPageV1() {
 
         String name = "CLH";
         int floor = 1;
@@ -66,10 +72,37 @@ public class MainController {
         algorithm.BuildGraph(FileUtils.getGraphPath(fileName), FileUtils.getMapPath(fileName), name, floor);
     }
 
+    @GetMapping("/SetPage")
+    public void SetPageV2() {
+        try {
+            ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+            Resource[] resources = resolver.getResources("classpath:static/json/*");
+
+            for (Resource resource : resources) {
+                File file = resource.getFile();
+                System.out.println(file.getName());
+                System.out.println(Algorithm.convertFileToString(file));
+                algorithm.BuildGraphV2(Algorithm.convertFileToString(file));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("Failed to load files from classpath.");
+        }
+
+    }
+
     @GetMapping("/Reset")
     public String Reset(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        graphRepository.deleteAll();
-        return "Reset successfully " + new Random().nextInt(1000);
+        if (graphRepository.count() > 0) {
+            graphRepository.deleteAll();
+        }
+        if (nodeRepository.count() > 0) {
+            nodeRepository.deleteAll();
+        }
+        if (coordinateRepository.count() > 0) {
+            coordinateRepository.deleteAll();
+        }
+        return "Reset successfully ";
     }
 
     @GetMapping("/MainPage")
@@ -86,7 +119,7 @@ public class MainController {
         String name = NI.name;
         Integer floor = NI.floor;
 
-        String imagePath = "classpath:static/mapWithNode/" + name + "Floor" + floor + ".jpg";
+        String imagePath = "classpath:static/map/" + name + "_" + floor + ".jpg";
         Resource resource = resourceLoader.getResource(imagePath);
         byte[] imageBytes;
         try (InputStream imageInputStream = resource.getInputStream()) {
