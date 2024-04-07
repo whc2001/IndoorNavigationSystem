@@ -308,9 +308,11 @@ function resizeGraph() {
         canvas.getObjects().forEach(obj => {
             if (obj.graphProperties?.type === "node") {
                 obj.set({ radius: getNodeSize() });
+                obj.setCoords();
             }
             else if (obj.graphProperties?.type === "edge") {
                 obj.set({ strokeWidth: getConnectionSize() });
+                obj.setCoords();
             }
         });
         canvas.renderAll();
