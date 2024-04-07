@@ -1,9 +1,14 @@
 package yorku.indoor_navigation_system.backend;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import jakarta.persistence.*;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Entity
 public class Graph {
@@ -31,6 +36,7 @@ public class Graph {
 		this.mapPath = path;
 		this.graphPath = graphPath;
 	}
+
 
 	public Graph() {
 		this.graph_node = new ArrayList<>();

@@ -22,6 +22,8 @@ public class Node{
 	)
 	List<Node> Nodes;
 	String name;
+	double position;
+	double nodeId;
 	int type = 0;
 //-1: cyan, 0:red, 1:blue, 2:green, 3:yellow, 4:pink
 	
@@ -36,7 +38,7 @@ public class Node{
 
 
 	public Node() {
-
+		Nodes = new ArrayList<>();
 	}
 
 	public Coordinate getC() {

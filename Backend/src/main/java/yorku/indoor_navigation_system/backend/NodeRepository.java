@@ -10,6 +10,7 @@ public interface NodeRepository extends JpaRepository<Node, Integer>{
 	List<Node> findById(int id);
 
 
+
 	List<Node> findAll();
 	
 
