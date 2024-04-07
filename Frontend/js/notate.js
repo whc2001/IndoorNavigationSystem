@@ -116,17 +116,32 @@ function exportGraph() {
         return;
     }
 
+    // Check there is no isolated node
+    let isolatedNode = false;
+    canvas.getObjects().forEach(obj => {
+        if (obj.graphProperties?.type === "node" && obj.graphProperties.connections.length === 0) {
+            highlightNode(obj, true);
+            isolatedNode = true;
+        }
+    });
+    if (isolatedNode) {
+        canvas.renderAll();
+        alert("Some nodes are isolated, please check the highlighted nodes!");
+        return;
+    }
+
     // Check if all special nodes have attributes
     let hasError = false;
+    let missingAttribute = false;
     canvas.getObjects().forEach(obj => {
         if (obj.graphProperties?.type === "node") {
             if (nodeAttributeName[obj.appProperties.type] && !obj.appProperties.data) {
                 highlightNode(obj, true);
-                hasError = true;
+                missingAttribute = true;
             }
         }
     });
-    if (hasError) {
+    if (missingAttribute) {
         canvas.renderAll();
         alert("Some nodes are missing mandatory attributes, please check the highlighted nodes!");
         return;
@@ -245,6 +260,8 @@ function endConnecting(endNode) {
             connectStartNode.graphProperties.connections.push(connectWire);
             connectEndNode.graphProperties.connections.push(connectWire);
             console.log("connect success");
+            highlightNode(connectStartNode, false);
+            highlightNode(connectEndNode, false);
         }
     }
     // Not finishing on another node
@@ -477,9 +494,7 @@ function initCanvas(width, height) {
 }
 
 function onLoadImage() {
-    //initCanvas(image.width, image.height);
     initCanvas(grpCanvas.clientWidth, grpCanvas.clientHeight);
-    //canvas.setDimensions({ width: grpCanvas.clientWidth, height: grpCanvas.clientHeight });
 
     canvas.setBackgroundImage(new fabric.Image(image), canvas.renderAll.bind(canvas), {
         scaleX: 1,
