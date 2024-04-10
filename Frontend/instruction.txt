@@ -4,6 +4,7 @@ Edit mode:
 	Add node			Left click on Map
 	Delete node		Ctrl+Left click on Node
 	Connect node		Right drag on Node
+	Change node type		Shift+Left click on Node
 
 Inspect mode:
 	Move map		Right drag on Map
