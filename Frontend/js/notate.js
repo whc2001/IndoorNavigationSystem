@@ -164,6 +164,34 @@ function importGraph(json) {
     }
 }
 
+function checkGraph() {
+    let errorMsg = "";
+
+    // Check there is no isolated node
+    canvas.getObjects().forEach(obj => {
+        if (obj.graphProperties?.type === "node" && obj.graphProperties.connections.length === 0) {
+            markInvalidNode(obj, true);
+            isolatedNode = true;
+        }
+    });
+    if (isolatedNode)
+        errorMsg += "Some nodes are isolated, please check the highlighted nodes!\n";
+
+    // Check if all special nodes have attributes
+    canvas.getObjects().forEach(obj => {
+        if (obj.graphProperties?.type === "node") {
+            if (nodeAttributeName[obj.appProperties.type] && !obj.appProperties.data) {
+                markInvalidNode(obj, true);
+                missingAttribute = true;
+            }
+        }
+    });
+    if (missingAttribute)
+        errorMsg += "Some nodes are missing mandatory attributes, please check the highlighted nodes!";
+
+    return errorMsg.length > 0 ? errorMsg : null;
+}
+
 function exportGraph() {
     const building = txtBuilding.value.trim();
     if (!building) {
@@ -176,32 +204,12 @@ function exportGraph() {
         return;
     }
 
-    // Check there is no isolated node
-    let isolatedNode = false;
-    canvas.getObjects().forEach(obj => {
-        if (obj.graphProperties?.type === "node" && obj.graphProperties.connections.length === 0) {
-            markInvalidNode(obj, true);
-            isolatedNode = true;
-        }
-    });
-    if (isolatedNode) {
-        alert("Some nodes are isolated, please check the highlighted nodes!");
-        return;
-    }
-
-    // Check if all special nodes have attributes
-    let missingAttribute = false;
-    canvas.getObjects().forEach(obj => {
-        if (obj.graphProperties?.type === "node") {
-            if (nodeAttributeName[obj.appProperties.type] && !obj.appProperties.data) {
-                markInvalidNode(obj, true);
-                missingAttribute = true;
-            }
-        }
-    });
-    if (missingAttribute) {
-        alert("Some nodes are missing mandatory attributes, please check the highlighted nodes!");
-        return;
+    // Check if graph is valid, but do not disallow export
+    const errorMsg = checkGraph();
+    if (errorMsg) {
+        const confirmed = confirm(errorMsg + "\nDo you want to export anyway?");
+        if (!confirmed)
+            return;
     }
 
     let ret = {};
