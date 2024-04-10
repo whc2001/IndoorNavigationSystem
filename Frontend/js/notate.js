@@ -447,11 +447,13 @@ function onCanvasMouseDown(o) {
                 }
                 canvas.renderAll();
             }
-            else if(target && o.e.shiftKey) {
+            else if(target && o.e.shiftKey) {   // Change node type
                 const newType = getSelectedNodeType();
                 if(target.graphProperties.type === "node") {
                     target.set({ fill: nodeColors[newType] });
                     target.appProperties.type = newType;
+                    if(!nodeAttributeName[newType])
+                        delete target.appProperties.data;
                     canvas.renderAll();
                 }
             }
