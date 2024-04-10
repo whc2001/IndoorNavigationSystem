@@ -60,7 +60,7 @@ $(document).ready(function () {
 
         floorSelect.empty();
         floorSelect.append("<option value=''>Select Floor</option>");
-        for (var i = 0; i < filteredFloors.length; i++) {
+        for (var i = filteredFloors.length-1; i >= 0; i--) {
             var option = document.createElement("option");
             option.text = filteredFloors[i].floor;
             option.value = filteredFloors[i].floor;
@@ -87,17 +87,15 @@ $(document).ready(function () {
     });
 });
 
-
 document.getElementById('NavigateButton').addEventListener('click', function (event) {
     event.preventDefault();
     var formData = {
         name: $("#nameSelect2").val(),
-        floor: $("#floorSelect2").val(),
+        name2: $("#nameSelect2").val(),
         start: $("#start").val(),
         end: $("#end").val()
     };
-    var imgElement = document.getElementById('mapImage');
-
+    var container = document.getElementById('imageContainer2');
 
     $.ajax({
         url: apiServer + '/Main/Navigate',
@@ -105,56 +103,110 @@ document.getElementById('NavigateButton').addEventListener('click', function (ev
         contentType: 'application/json',
         data: JSON.stringify(formData),
         success: function (response) {
-            if (response.trim() === '') {
-                alert('room code is invalid, please enter again');
+            if (response == null || response.length === 0) {
+                alert('No images returned from server.');
                 return;
             }
-            var base64Image = 'data:image/jpeg;base64,' + response;
-            imgElement.src = base64Image;
-            var container = document.getElementById('imageContainer2');
-            var thumbnailDiv = document.createElement('div');
-            thumbnailDiv.style.display = 'inline-block';
-            var specificImageId = 'Route';
 
-            var imagesInContainer = container.getElementsByTagName('img');
+            // Clear existing images in the container
+            container.innerHTML = "";
 
-            var isImageExist = false;
-
-            for (var i = 0; i < imagesInContainer.length; i++) {
-                var image = imagesInContainer[i];
-                if (image.id === specificImageId) {
-                    isImageExist = true;
-                    break;
-                }
-            }
-            if (isImageExist) {
-                var image = document.getElementById(specificImageId);
-                image.src = base64Image;
-            } else {
-                var newImage = document.createElement('img');
-                newImage.src = base64Image;
-                newImage.style.cssText = "inline-block;";
-                newImage.id = 'Route';
-                newImage.style.width = "150px";
-                newImage.style.height = "150px";
-                newImage.style.margin = "10px";
-                newImage.style.marginTop = "3px";
-                newImage.addEventListener('click', function () {
+            response.forEach(function (base64Image) {
+                var imgElement = document.createElement('img');
+                imgElement.src = 'data:image/jpeg;base64,' + base64Image;
+                imgElement.style.width = "150px";
+                imgElement.style.height = "150px";
+                imgElement.style.margin = "10px";
+                imgElement.style.marginTop = "3px";
+                imgElement.addEventListener('click', function () {
                     var imgElement = document.getElementById('mapImage');
-                    imgElement.src = base64Image;
+                    imgElement.src = 'data:image/jpeg;base64,' + base64Image;
                 });
-                thumbnailDiv.appendChild(newImage);
+
+                var thumbnailDiv = document.createElement('div');
+                thumbnailDiv.style.display = 'inline-block';
+                thumbnailDiv.appendChild(imgElement);
+
                 var description = document.createElement('p');
                 description.textContent = 'This is the route you have selected.';
                 thumbnailDiv.appendChild(description);
+
                 container.appendChild(thumbnailDiv);
-            }
+            });
         },
         error: function (request, msg, error) {
-
+            console.error('Error:', error);
         }
-    })
+    });
 });
+
+// document.getElementById('NavigateButton').addEventListener('click', function (event) {
+//     event.preventDefault();
+//     var formData = {
+//         name: $("#nameSelect2").val(),
+//         name2: $("#nameSelect2").val(),
+//         start: $("#start").val(),
+//         end: $("#end").val()
+//     };
+//     var imgElement = document.getElementById('mapImage');
+//
+//
+//     $.ajax({
+//         url: apiServer + '/Main/Navigate',
+//         type: 'POST',
+//         contentType: 'application/json',
+//         data: JSON.stringify(formData),
+//         success: function (response) {
+//             if (response==null || response.length === 0) {
+//                 alert('room code is invalid, please enter again');
+//                 return;
+//             }
+//             var base64Image = 'data:image/jpeg;base64,' + response;
+//             imgElement.src = base64Image;
+//             var container = document.getElementById('imageContainer2');
+//             var thumbnailDiv = document.createElement('div');
+//             thumbnailDiv.style.display = 'inline-block';
+//             var specificImageId = 'Route';
+//
+//             var imagesInContainer = container.getElementsByTagName('img');
+//
+//             var isImageExist = false;
+//
+//             for (var i = 0; i < imagesInContainer.length; i++) {
+//                 var image = imagesInContainer[i];
+//                 if (image.id === specificImageId) {
+//                     isImageExist = true;
+//                     break;
+//                 }
+//             }
+//             if (isImageExist) {
+//                 var image = document.getElementById(specificImageId);
+//                 image.src = base64Image;
+//             } else {
+//                 var newImage = document.createElement('img');
+//                 newImage.src = base64Image;
+//                 newImage.style.cssText = "inline-block;";
+//                 newImage.id = 'Route';
+//                 newImage.style.width = "150px";
+//                 newImage.style.height = "150px";
+//                 newImage.style.margin = "10px";
+//                 newImage.style.marginTop = "3px";
+//                 newImage.addEventListener('click', function () {
+//                     var imgElement = document.getElementById('mapImage');
+//                     imgElement.src = base64Image;
+//                 });
+//                 thumbnailDiv.appendChild(newImage);
+//                 var description = document.createElement('p');
+//                 description.textContent = 'This is the route you have selected.';
+//                 thumbnailDiv.appendChild(description);
+//                 container.appendChild(thumbnailDiv);
+//             }
+//         },
+//         error: function (request, msg, error) {
+//
+//         }
+//     })
+// });
 
 document.getElementById('LoadButton').addEventListener('click', function (event) {
     event.preventDefault();
@@ -296,7 +348,7 @@ $(document).ready(function() {
     function updateRoomsTable(rooms) {
         $('#accessibleRoomsTable tbody').empty();
 
-        var columnsPerRow = 6;
+        var columnsPerRow = 5;
 
         var numRows = Math.ceil(rooms.length / columnsPerRow);
 

@@ -16,6 +16,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Random;
 
 @CrossOrigin
@@ -84,10 +85,13 @@ public class MainController {
                 System.out.println(Algorithm.convertFileToString(file));
                 algorithm.BuildGraphV2(Algorithm.convertFileToString(file));
             }
+            algorithm.connectFloor();
+
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("Failed to load files from classpath.");
         }
+        System.out.println("Finished loading files from classpath.");
 
     }
 
@@ -126,46 +130,10 @@ public class MainController {
                 rooms.add(n.getName());
             }
         }
-        quickSort(rooms, 0, rooms.size()-1);
+        Algorithm.quickSort(rooms, 0, rooms.size()-1);
         return rooms;
     }
 
-    static void quickSort(ArrayList<String> arr, int low, int high) {
-        if (low < high) {
-            int pi = partition(arr, low, high);
-            quickSort(arr, low, pi - 1);
-            quickSort(arr, pi + 1, high);
-        }
-    }
-
-    static int partition(ArrayList<String> arr, int low, int high) {
-        String pivot = arr.get(high);
-
-        int i = low - 1;
-
-        for (int j = low; j < high; j++) {
-            if (compareRooms(arr.get(j), pivot) < 0) {
-                i++;
-
-                String temp = arr.get(i);
-                arr.set(i, arr.get(j));
-                arr.set(j, temp);
-            }
-        }
-        String temp = arr.get(i + 1);
-        arr.set(i + 1, arr.get(high));
-        arr.set(high, temp);
-
-        return i + 1;
-    }
-    static int compareRooms(String room1, String room2) {
-        int roomNumber1 = Integer.parseInt(room1.replaceAll("[^0-9]", ""));
-        int roomNumber2 = Integer.parseInt(room2.replaceAll("[^0-9]", ""));
-        if (roomNumber1 == roomNumber2) {
-            return room1.replaceAll("[0-9]", "").compareTo(room2.replaceAll("[0-9]", ""));
-        }
-        return roomNumber1 - roomNumber2;
-    }
 
     @PostMapping("/Load")
     public String Load(@RequestBody NavigationInformation NI) throws IOException {
@@ -189,36 +157,45 @@ public class MainController {
     }
 
     @PostMapping("/Navigate")
-    public String Navigate(@RequestBody NavigationInformation NI) throws IOException {
-        String name = NI.name;
-        Integer floor = NI.floor;
+    public ArrayList<String> Navigate(@RequestBody NavigationInformation NI) throws IOException {
+        String building1 = NI.name;
+        String building2 = NI.name2;
         String start = NI.start;
         String end = NI.end;
-        ArrayList<Graph> result = new ArrayList<>(graphRepository.findByNameAndFloor(name, floor));
+        ArrayList<Graph> result = new ArrayList<>(graphRepository.findByName(building1));
         Node s = null;
-        for(Node n : result.get(0).getGraph_node()) {
-            if (n.getName()!=null&&n.getName().equals(start)) {
-                s = n;
+        for (Graph g : result) {
+            for(Node n : g.getGraph_node()) {
+                if (n.getName()!=null&&n.getName().equals(start)) {
+                    s = n;
+                }
             }
         }
+        ArrayList<Graph> result2 = new ArrayList<>(graphRepository.findByName(building2));
         Node e = null;
-        for(Node n : result.get(0).getGraph_node()) {
-            if (n.getName()!=null&&n.getName().equals(end)) {
-                e = n;
+        for(Graph g : result2) {
+            for(Node n : g.getGraph_node()) {
+                if (n.getName()!=null&&n.getName().equals(end)) {
+                    e = n;
+                }
             }
         }
         if(s == null || e == null) {
-            return "";
+            return null;
         }
-        BufferedImage retImg = algorithm.Navigate(result.get(0), s, e, "src/main/resources/static/result/");
+        ArrayList<BufferedImage> retImg = algorithm.Navigate(building1,building2, s, e, "src/main/resources/static/result/");
+        ArrayList<String> base64Images = new ArrayList<>();
+        for (BufferedImage img : retImg) {
+            try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+                ImageIO.write(img, "png", outputStream);
+                base64Images.add(Base64.getEncoder().encodeToString(outputStream.toByteArray()));
+            } catch (IOException ex) {
+                ex.printStackTrace();
+                return null;
+            }
+        }
+        return base64Images;
 
-        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
-            ImageIO.write(retImg, "png", outputStream);
-            return java.util.Base64.getEncoder().encodeToString(outputStream.toByteArray());
-        } catch (IOException ex) {
-            ex.printStackTrace();
-            return "";
-        }
     }
 }
 

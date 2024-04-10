@@ -3,6 +3,9 @@ package yorku.indoor_navigation_system.backend;
 public class NavigationInformation {
 
     public String name;
+
+    public String name2;
+
     public Integer floor;
     public String start;
     public String end;

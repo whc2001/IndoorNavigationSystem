@@ -87,4 +87,8 @@ public class Draw {
 
         g2d.dispose();
     }
+
+    public BufferedImage getImage() {
+    	return image;
+    }
 }
