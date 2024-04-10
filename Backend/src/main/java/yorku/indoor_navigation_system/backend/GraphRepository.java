@@ -13,8 +13,6 @@ public interface GraphRepository extends JpaRepository<Graph, Integer>{
     @Query("SELECT DISTINCT e.name FROM Graph e")
     List<String> findAllDistinctNames();
 
-    List<Graph> findByGraphPath(String graphPath);
-
     List<Graph> findByNameAndFloor(String name, Integer floor);
     @Query("SELECT DISTINCT e.floor FROM Graph e WHERE e.name = ?1")
     List<Integer> findAllFloorsByBuilding(String name );

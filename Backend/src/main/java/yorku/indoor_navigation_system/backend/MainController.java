@@ -57,21 +57,7 @@ public class MainController {
         return buildingList;
     }
 
-    @GetMapping("/SetPageOld")
-    public void SetPageV1() {
 
-        String name = "CLH";
-        int floor = 1;
-//        String serializePath = "src/main/resources/graph/clhLevel1.ser";
-//
-//        ArrayList<Node> Nodes = Algorithm.deserializeObjectFromFile(serializePath);
-        String fileName = FileUtils.getFileName(name, floor);
-        algorithm.BuildGraph(FileUtils.getGraphPath(fileName), FileUtils.getMapPath(fileName), name, floor);
-
-        floor = 2;
-        fileName = FileUtils.getFileName(name, floor);
-        algorithm.BuildGraph(FileUtils.getGraphPath(fileName), FileUtils.getMapPath(fileName), name, floor);
-    }
 
     @GetMapping("/SetPage")
     public void SetPageV2() {
@@ -164,6 +150,7 @@ public class MainController {
         String end = NI.end;
         ArrayList<Graph> result = new ArrayList<>(graphRepository.findByName(building1));
         Node s = null;
+        System.out.println(start);
         for (Graph g : result) {
             for(Node n : g.getGraph_node()) {
                 if (n.getName()!=null&&n.getName().equals(start)) {
@@ -180,6 +167,8 @@ public class MainController {
                 }
             }
         }
+        System.out.println(s);
+        System.out.println(e);
         if(s == null || e == null) {
             return null;
         }

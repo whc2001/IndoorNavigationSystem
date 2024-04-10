@@ -28,15 +28,6 @@ public class Graph {
 	String mapPath;
 	String graphPath;
 
-	public Graph(ArrayList<Node> graph_node, String name, Integer floor, String path, String graphPath) {
-		super();
-		this.graph_node = graph_node;
-		this.name = name;
-		this.floor = floor;
-		this.mapPath = path;
-		this.graphPath = graphPath;
-	}
-
 
 	public Graph() {
 		this.graph_node = new ArrayList<>();

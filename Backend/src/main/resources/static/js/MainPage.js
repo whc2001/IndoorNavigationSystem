@@ -108,8 +108,10 @@ document.getElementById('NavigateButton').addEventListener('click', function (ev
                 return;
             }
 
-            // Clear existing images in the container
             container.innerHTML = "";
+
+            var mainImage = document.getElementById('mapImage');
+            mainImage.src = 'data:image/jpeg;base64,' + response[0];
 
             response.forEach(function (base64Image) {
                 var imgElement = document.createElement('img');
