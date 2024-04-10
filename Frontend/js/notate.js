@@ -46,6 +46,9 @@ let isConnecting = false;
 let connectStartNode = null;
 let connectWire = null;
 let graphSizeValue = 2;
+let invalidNodes = new Set();
+let invalidNodesFlashingTimer;
+let invalidNodesFlashingState = false;
 
 function recalculateGraphSize(scale) {
     graphSizeValue = Math.round(-8 * scale + 22.31);
@@ -62,9 +65,19 @@ function getConnectionSize() {
 
 function highlightNode(node, highlight) {
     node.set({
-        stroke: highlight ? "white" : "transparent",
-        strokeWidth: highlight ? getConnectionSize() / 2 : 0,
+        stroke: highlight ? "lawngreen" : "transparent",
+        strokeWidth: highlight ? getConnectionSize() / 1.8 : 0,
     });
+}
+
+function markInvalidNode(node, invalid) {
+    if (invalid) {
+        invalidNodes.add(node);
+    }
+    else {
+        invalidNodes.delete(node);
+        highlightNode(node, false);
+    }
 }
 
 function hasConnection(node1, node2) {  // check if two nodes are connected, ignore direction
@@ -167,12 +180,11 @@ function exportGraph() {
     let isolatedNode = false;
     canvas.getObjects().forEach(obj => {
         if (obj.graphProperties?.type === "node" && obj.graphProperties.connections.length === 0) {
-            highlightNode(obj, true);
+            markInvalidNode(obj, true);
             isolatedNode = true;
         }
     });
     if (isolatedNode) {
-        canvas.renderAll();
         alert("Some nodes are isolated, please check the highlighted nodes!");
         return;
     }
@@ -182,13 +194,12 @@ function exportGraph() {
     canvas.getObjects().forEach(obj => {
         if (obj.graphProperties?.type === "node") {
             if (nodeAttributeName[obj.appProperties.type] && !obj.appProperties.data) {
-                highlightNode(obj, true);
+                markInvalidNode(obj, true);
                 missingAttribute = true;
             }
         }
     });
     if (missingAttribute) {
-        canvas.renderAll();
         alert("Some nodes are missing mandatory attributes, please check the highlighted nodes!");
         return;
     }
@@ -308,8 +319,8 @@ function endConnecting(endNode) {
             connectStartNode.graphProperties.connections.push(connectWire);
             connectEndNode.graphProperties.connections.push(connectWire);
             console.log("connect success");
-            highlightNode(connectStartNode, false);
-            highlightNode(connectEndNode, false);
+            markInvalidNode(connectStartNode, false);
+            markInvalidNode(connectEndNode, false);
         }
     }
     // Not finishing on another node
@@ -407,8 +418,7 @@ function onCanvasMouseDown(o) {
                         const data = prompt("Enter attribute data: " + nodeAttributeName[target.appProperties.type], target.appProperties.data);
                         if (data) {
                             target.appProperties.data = data;
-                            highlightNode(target, false);
-                            canvas.renderAll();
+                            markInvalidNode(target, false);
                         }
                     }
                 }
@@ -596,6 +606,15 @@ function init() {
     nodeTypeHotkeyTarget = [optCorridor, optInsideDoor, optClassroom, optStair, optOutsideDoor, optElevator];
 
     cvsMain = document.getElementById("cvsMain");
+
+    invalidNodesFlashingTimer = setInterval(() => {
+        if(invalidNodes.size === 0) return;
+        invalidNodesFlashingState = !invalidNodesFlashingState;
+        invalidNodes.forEach(node => {
+            highlightNode(node, invalidNodesFlashingState);
+        });
+        canvas.renderAll();
+    }, 500);
 
     btnOpenImage.addEventListener("click", function () {
         const fileInput = document.createElement("input");
