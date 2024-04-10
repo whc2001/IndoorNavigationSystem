@@ -30,7 +30,7 @@ const nodeColors = {
 const fileNamePattern = /^(?<building>[^\s]+)_(?<floor>[^\s]+)\..+$/s;
 
 let grpCanvas;
-let btnOpenImage, btnImportJSON, btnExportJSON;
+let btnOpenImage, btnImportJSON, btnValidateGraph, btnExportJSON;
 let txtBuilding, txtFloor;
 let optEdit, optInspect, optAttribute;
 let numGraphSize;
@@ -168,6 +168,7 @@ function checkGraph() {
     let errorMsg = "";
 
     // Check there is no isolated node
+    let isolatedNode = false;
     canvas.getObjects().forEach(obj => {
         if (obj.graphProperties?.type === "node" && obj.graphProperties.connections.length === 0) {
             markInvalidNode(obj, true);
@@ -175,9 +176,10 @@ function checkGraph() {
         }
     });
     if (isolatedNode)
-        errorMsg += "Some nodes are isolated, please check the highlighted nodes!\n";
+        errorMsg += "Some nodes are isolated\n";
 
     // Check if all special nodes have attributes
+    let missingAttribute = false;
     canvas.getObjects().forEach(obj => {
         if (obj.graphProperties?.type === "node") {
             if (nodeAttributeName[obj.appProperties.type] && !obj.appProperties.data) {
@@ -187,7 +189,7 @@ function checkGraph() {
         }
     });
     if (missingAttribute)
-        errorMsg += "Some nodes are missing mandatory attributes, please check the highlighted nodes!";
+        errorMsg += "Some nodes are missing mandatory attributes\n";
 
     return errorMsg.length > 0 ? errorMsg : null;
 }
@@ -582,6 +584,7 @@ function onLoadImage() {
     recalculateGraphSize(scale);
 
     btnImportJSON.removeAttribute("disabled");
+    btnValidateGraph.removeAttribute("disabled");
     btnExportJSON.removeAttribute("disabled");
     txtBuilding.removeAttribute("disabled");
     txtFloor.removeAttribute("disabled");
@@ -592,6 +595,7 @@ function init() {
 
     btnOpenImage = document.getElementById("btnOpenImage");
     btnImportJSON = document.getElementById("btnImportJSON");
+    btnValidateGraph = document.getElementById("btnValidateGraph");
     btnExportJSON = document.getElementById("btnExportJSON");
 
     txtBuilding = document.getElementById("txtBuilding");
@@ -653,18 +657,6 @@ function init() {
         fileInput.click();
     });
 
-    btnExportJSON.addEventListener("click", function () {
-        const json = exportGraph();
-        if (json) {
-            const blob = new Blob([json], { type: "application/json" });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = `${txtBuilding.value.trim()}_${txtFloor.value.trim()}.json`;
-            a.click();
-        }
-    });
-
     btnImportJSON.addEventListener("click", function () {
         if (canvas && canvas.getObjects().length > 0) {
             if (!confirm("This will clear the current graph, continue?")) {
@@ -696,6 +688,28 @@ function init() {
             }
         };
         fileInput.click();
+    });
+
+    btnValidateGraph.addEventListener("click", function () {
+        if(!canvas || canvas.getObjects().length === 0)
+            return alert("❌Graph is empty!");
+        const errorMsg = checkGraph();
+        if (errorMsg)
+            alert("❌Problem detected:\n" + errorMsg);
+        else
+            alert("✔Graph is valid!");
+    });
+
+    btnExportJSON.addEventListener("click", function () {
+        const json = exportGraph();
+        if (json) {
+            const blob = new Blob([json], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `${txtBuilding.value.trim()}_${txtFloor.value.trim()}.json`;
+            a.click();
+        }
     });
 }
 
