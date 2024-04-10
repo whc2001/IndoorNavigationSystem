@@ -24,6 +24,7 @@ public class Node{
 	String name;
 	double position;
 	double nodeId;
+	int floor;
 	int type = 0;
 //-1: cyan, 0:red, 1:blue, 2:green, 3:yellow, 4:pink
 	
@@ -74,6 +75,11 @@ public class Node{
 	}
 	
 	public String toString() {
-		return c.x+","+c.y+"  "+name+"  "+type+"  ";
+		String s = "[";
+		for(Node n:Nodes) {
+			s+=n.nodeId+" ";
+		}
+		s+="]";
+		return "x:"+c.x+",y:"+c.y+"  name:"+name+"  type:"+type+"  id:"+nodeId+" floor:"+floor+"  position:"+position+"  nodes:"+s;
 	}
 }
