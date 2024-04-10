@@ -26,7 +26,6 @@ public class Graph {
 
 	Integer floor;
 	String mapPath;
-	String graphPath;
 
 
 	public Graph() {
@@ -39,14 +38,6 @@ public class Graph {
 
 	public void setMapPath(String mapPath) {
 		this.mapPath = mapPath;
-	}
-
-	public String getGraphPath() {
-		return graphPath;
-	}
-
-	public void setGraphPath(String graphPath) {
-		this.graphPath = graphPath;
 	}
 
 	public ArrayList<Node> getGraph_node() {

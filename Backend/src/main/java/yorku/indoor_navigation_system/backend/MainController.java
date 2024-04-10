@@ -146,8 +146,8 @@ public class MainController {
     public ArrayList<String> Navigate(@RequestBody NavigationInformation NI) throws IOException {
         String building1 = NI.name;
         String building2 = NI.name2;
-        String start = NI.start;
-        String end = NI.end;
+        String start = NI.start.trim();
+        String end = NI.end.trim();
         ArrayList<Graph> result = new ArrayList<>(graphRepository.findByName(building1));
         Node s = null;
         System.out.println(start);

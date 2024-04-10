@@ -22,7 +22,7 @@ public class Node{
 	)
 	List<Node> Nodes;
 	String name;
-	double position;
+	String position;
 	double nodeId;
 	int floor;
 	int type = 0;

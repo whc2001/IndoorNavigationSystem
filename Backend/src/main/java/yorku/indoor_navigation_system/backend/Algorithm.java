@@ -61,7 +61,7 @@ public class Algorithm {
     public ArrayList<BufferedImage> Navigate(String building1, String building2, Node start, Node des, String resultPath) {
         System.out.println("Start navigate from " + building1 + ":" +start.name + " to " + building2 + ":" + des.name);
         ArrayList<BufferedImage> result = new ArrayList<BufferedImage>();
-        if(building1.equals(building2)) {
+        if(building1.equals(building2)&&start.floor!=des.floor) {
             ArrayList<Graph> g = (ArrayList<Graph>) graphRepository.findByNameAndFloor(building1, start.floor);
             ArrayList<Node> AllNodes = new ArrayList<Node>();
             AllNodes.addAll(g.get(0).getGraph_node());
@@ -86,6 +86,7 @@ public class Algorithm {
                 }
                 p = Route.get(i);
             }
+
             Draw d1 = null;
             Draw d2 = null;
             System.out.println("Route1: "+Route1);
@@ -115,7 +116,28 @@ public class Algorithm {
             }
             result.add(d2.getImage());
             return result;
-        }else {
+        }else if(building1.equals(building2)&&start.floor==des.floor) {
+            ArrayList<Graph> g = (ArrayList<Graph>) graphRepository.findByNameAndFloor(building1, start.floor);
+            ArrayList<Node> AllNodes = new ArrayList<Node>();
+            AllNodes.addAll(g.get(0).getGraph_node());
+            ArrayList<Node> Route = calculateRoute(AllNodes, start, des, false);
+            System.out.println("Route: "+Route);
+            Draw d = null;
+            try {
+                d = new Draw(Route, (BufferedImage) FileUtils.openResImage(FileUtils.getMapPath(FileUtils.getFileName(building1, start.floor))),"Start","Destination");
+                d.drawRoute();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            File outputFile = new File(resultPath+ FileUtils.getFileName(building1, start.floor) + "_result.png");
+            try {
+                ImageIO.write(d.getImage(), "png", outputFile);
+                System.out.println("image save success！");
+            } catch (IOException e) {
+                System.out.println("image save success fail：" + e.getMessage());
+            }
+            result.add(d.getImage());
+            return result;
 
         }
         return null;
@@ -174,7 +196,7 @@ public class Algorithm {
     }
 
     public double NodeDisCalculate(Node n1, Node n2) {
-        if((n1.type==4&&n2.type==4||n1.type==1&&n2.type==1)&&n1.position==n2.position){
+        if((n1.type==4&&n2.type==4||n1.type==1&&n2.type==1)&&n1.position.equals(n2.position)){
             return 0;
         }
         return Math.sqrt((n1.c.x - n2.c.x) * (n1.c.x - n2.c.x) + (n1.c.y - n2.c.y) * (n1.c.y - n2.c.y));
@@ -217,8 +239,7 @@ public class Algorithm {
             n1.c = c;
             if(m.get("data") != null) {
                 if(n1.type == 1||n1.type == 4||n1.type == 5) {
-                    if(((String) m.get("data")).charAt(0)>=48&&((String) m.get("data")).charAt(0)<=57)
-                        n1.position = Double.parseDouble((String) m.get("data"));
+                    n1.position = (String) m.get("data");
                 } else {
                     n1.name = (String) m.get("data");
                     if(n1.name.equals("?")){
@@ -279,8 +300,8 @@ public class Algorithm {
         for (String building : BuildingList) {
             List<Integer> FloorList = graphRepository.findAllFloorsByBuilding(building);
             System.out.println(FloorList);
-            Map<Double,ArrayList<Node>> stairs = new HashMap<Double,ArrayList<Node>>();
-            Map<Double,ArrayList<Node>> elevator = new HashMap<Double,ArrayList<Node>>();
+            Map<String,ArrayList<Node>> stairs = new HashMap<>();
+            Map<String,ArrayList<Node>> elevator = new HashMap<>();
             for (int floor : FloorList) {
                 Graph g = graphRepository.findByNameAndFloor(building, floor).get(0);
                 for (Node n : g.graph_node) {
