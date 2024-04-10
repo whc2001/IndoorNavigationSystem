@@ -672,4 +672,10 @@ function init() {
     });
 }
 
+window.addEventListener('beforeunload', function (e) {
+    if (canvas) {
+        e.preventDefault();
+        return "";  // default message
+    }
+});
 document.addEventListener("DOMContentLoaded", init);
