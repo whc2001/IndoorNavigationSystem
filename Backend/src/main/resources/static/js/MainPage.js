@@ -58,9 +58,13 @@ $(document).ready(function () {
             return item.name === selectedBuilding;
         });
 
+        filteredFloors.sort(function(a, b) {
+            return a.floor - b.floor;
+        });
+
         floorSelect.empty();
         floorSelect.append("<option value=''>Select Floor</option>");
-        for (var i = filteredFloors.length-1; i >= 0; i--) {
+        for (var i = 0; i < filteredFloors.length; i++) {
             var option = document.createElement("option");
             option.text = filteredFloors[i].floor;
             option.value = filteredFloors[i].floor;
@@ -104,7 +108,7 @@ document.getElementById('NavigateButton').addEventListener('click', function (ev
         data: JSON.stringify(formData),
         success: function (response) {
             if (response == null || response.length === 0) {
-                alert('No images returned from server.');
+                alert('Wrong input, please enter again.');
                 return;
             }
 
@@ -142,73 +146,6 @@ document.getElementById('NavigateButton').addEventListener('click', function (ev
     });
 });
 
-// document.getElementById('NavigateButton').addEventListener('click', function (event) {
-//     event.preventDefault();
-//     var formData = {
-//         name: $("#nameSelect2").val(),
-//         name2: $("#nameSelect2").val(),
-//         start: $("#start").val(),
-//         end: $("#end").val()
-//     };
-//     var imgElement = document.getElementById('mapImage');
-//
-//
-//     $.ajax({
-//         url: apiServer + '/Main/Navigate',
-//         type: 'POST',
-//         contentType: 'application/json',
-//         data: JSON.stringify(formData),
-//         success: function (response) {
-//             if (response==null || response.length === 0) {
-//                 alert('room code is invalid, please enter again');
-//                 return;
-//             }
-//             var base64Image = 'data:image/jpeg;base64,' + response;
-//             imgElement.src = base64Image;
-//             var container = document.getElementById('imageContainer2');
-//             var thumbnailDiv = document.createElement('div');
-//             thumbnailDiv.style.display = 'inline-block';
-//             var specificImageId = 'Route';
-//
-//             var imagesInContainer = container.getElementsByTagName('img');
-//
-//             var isImageExist = false;
-//
-//             for (var i = 0; i < imagesInContainer.length; i++) {
-//                 var image = imagesInContainer[i];
-//                 if (image.id === specificImageId) {
-//                     isImageExist = true;
-//                     break;
-//                 }
-//             }
-//             if (isImageExist) {
-//                 var image = document.getElementById(specificImageId);
-//                 image.src = base64Image;
-//             } else {
-//                 var newImage = document.createElement('img');
-//                 newImage.src = base64Image;
-//                 newImage.style.cssText = "inline-block;";
-//                 newImage.id = 'Route';
-//                 newImage.style.width = "150px";
-//                 newImage.style.height = "150px";
-//                 newImage.style.margin = "10px";
-//                 newImage.style.marginTop = "3px";
-//                 newImage.addEventListener('click', function () {
-//                     var imgElement = document.getElementById('mapImage');
-//                     imgElement.src = base64Image;
-//                 });
-//                 thumbnailDiv.appendChild(newImage);
-//                 var description = document.createElement('p');
-//                 description.textContent = 'This is the route you have selected.';
-//                 thumbnailDiv.appendChild(description);
-//                 container.appendChild(thumbnailDiv);
-//             }
-//         },
-//         error: function (request, msg, error) {
-//
-//         }
-//     })
-// });
 
 document.getElementById('LoadButton').addEventListener('click', function (event) {
     event.preventDefault();
