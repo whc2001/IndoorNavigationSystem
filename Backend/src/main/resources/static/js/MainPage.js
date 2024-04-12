@@ -31,8 +31,9 @@ $(document).ready(function () {
                 var addedOptions = [];
                 var select = document.getElementsByName("name")[0];
                 var select2 = document.getElementsByName("name")[1];
+                var select3 = document.getElementsByName("name")[2];
                 for (var i = 0; i < buildingList.length; i++) {
-                    if (addedOptions.indexOf(buildingList[i].name) === -1) {
+                    if (addedOptions.indexOf(buildingList[i].name) === -1&&buildingList[i].name!=="Campus") {
                         var option = document.createElement("option");
                         option.text = buildingList[i].name;
                         option.value = buildingList[i].name;
@@ -41,6 +42,10 @@ $(document).ready(function () {
                         option.text = buildingList[i].name;
                         option.value = buildingList[i].name;
                         select2.appendChild(option);
+                        var option = document.createElement("option");
+                        option.text = buildingList[i].name;
+                        option.value = buildingList[i].name;
+                        select3.appendChild(option);
                         addedOptions.push(buildingList[i].name);
                     }
                 }
@@ -95,7 +100,7 @@ document.getElementById('NavigateButton').addEventListener('click', function (ev
     event.preventDefault();
     var formData = {
         name: $("#nameSelect2").val(),
-        name2: $("#nameSelect2").val(),
+        name2: $("#nameSelect3").val(),
         start: $("#start").val(),
         end: $("#end").val()
     };

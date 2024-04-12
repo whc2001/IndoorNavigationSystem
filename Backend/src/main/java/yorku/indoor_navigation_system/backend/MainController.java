@@ -72,6 +72,7 @@ public class MainController {
                 algorithm.BuildGraphV2(Algorithm.convertFileToString(file));
             }
             algorithm.connectFloor();
+            algorithm.connectBuilding();
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -172,7 +173,7 @@ public class MainController {
         if(s == null || e == null) {
             return null;
         }
-        ArrayList<BufferedImage> retImg = algorithm.Navigate(building1,building2, s, e, "src/main/resources/static/result/");
+        ArrayList<BufferedImage> retImg = algorithm.Navigate( s, e, "src/main/resources/static/result/");
         ArrayList<String> base64Images = new ArrayList<>();
         for (BufferedImage img : retImg) {
             try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {

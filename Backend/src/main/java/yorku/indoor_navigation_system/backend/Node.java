@@ -25,6 +25,7 @@ public class Node{
 	String position;
 	double nodeId;
 	int floor;
+	String building;
 	int type = 0;
 //-1: cyan, 0:red, 1:blue, 2:green, 3:yellow, 4:pink
 	
@@ -80,6 +81,7 @@ public class Node{
 			s+=n.nodeId+" ";
 		}
 		s+="]";
-		return "x:"+c.x+",y:"+c.y+"  name:"+name+"  type:"+type+"  id:"+nodeId+" floor:"+floor+"  position:"+position+"  nodes:"+s;
+		return "type:"+type+"  id:"+nodeId+"  position:"+position;
+//		return "x:"+c.x+",y:"+c.y+"  name:"+name+"  type:"+type+"  id:"+nodeId+" floor:"+floor+"  position:"+position+"  nodes:"+s;
 	}
 }

@@ -27,14 +27,19 @@
 
         <form action="/Main/Navigate" method="GET">
             <label>Navigate:</label>
-            <select id="nameSelect2" name="name" required>
-                <option value="">Select Building</option>
-            </select>
+
+
 <!--            <select id="floorSelect2" name="floor" required>-->
 <!--                <option value="">Select Floor</option>-->
 <!--            </select>-->
             <div class="input-wrapper">
+                <select id="nameSelect2" name="name" required>
+                    <option value="">Select Start Building</option>
+                </select>
                 <input type="text" id="start" name="start" placeholder="start point" required>
+                <select id="nameSelect3" name="name" required>
+                    <option value="">Select Destination Building</option>
+                </select>
                 <input type="text" id="end" name="end" placeholder="destination" required>
             </div>
             <button type="submit" id = "NavigateButton">Navigate</button>
