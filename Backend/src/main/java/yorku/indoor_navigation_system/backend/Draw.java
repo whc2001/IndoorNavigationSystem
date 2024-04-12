@@ -21,7 +21,8 @@ public class Draw {
     public void drawRoute() {
         Graphics2D g2d = image.createGraphics();
         g2d.setStroke(new BasicStroke(image.getWidth()/200));
-        g2d.setColor(Color.RED);
+        Color LightPurple = new Color(200, 0, 200);
+        g2d.setColor(LightPurple);
         for(int i = 0; i < nodes.size()-1; i++) {
         	g2d.drawLine(nodes.get(i).getC().getX(), nodes.get(i).getC().getY(),
         			nodes.get(i+1).getC().getX(), nodes.get(i+1).getC().getY());

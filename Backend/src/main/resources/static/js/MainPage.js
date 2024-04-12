@@ -122,6 +122,10 @@ document.getElementById('NavigateButton').addEventListener('click', function (ev
             var mainImage = document.getElementById('mapImage');
             mainImage.src = 'data:image/jpeg;base64,' + response[0];
 
+            var description = document.createElement('p');
+            description.textContent = 'This is the route you have selected.';
+            container.appendChild(description);
+
             response.forEach(function (base64Image) {
                 var imgElement = document.createElement('img');
                 imgElement.src = 'data:image/jpeg;base64,' + base64Image;
@@ -138,9 +142,6 @@ document.getElementById('NavigateButton').addEventListener('click', function (ev
                 thumbnailDiv.style.display = 'inline-block';
                 thumbnailDiv.appendChild(imgElement);
 
-                var description = document.createElement('p');
-                description.textContent = 'This is the route you have selected.';
-                thumbnailDiv.appendChild(description);
 
                 container.appendChild(thumbnailDiv);
             });
