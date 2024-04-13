@@ -87,57 +87,88 @@ public class Algorithm {
                 }
                 p = Route.get(i);
             }
+            String imageFileName1 = FileUtils.getResultFileName(Route1.get(0), Route1.get(Route1.size() - 1));
+            String imageFileName2 = FileUtils.getResultFileName(Route2.get(0), Route2.get(Route2.size() - 1));
+            if(FileUtils.fileExists(resultPath + imageFileName1 + ".png")) {
+                try {
+                    result.add(FileUtils.openResImage(FileUtils.getResultPath(imageFileName1 + ".png")));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }else{
+                Draw d1 = null;
+                try {
+                    d1 = new Draw(Route1, (BufferedImage) FileUtils.openResImage(FileUtils.getMapPath(FileUtils.getFileName(start.building, start.floor))), "Start", "Go to floor " + des.floor);
+                    d1.drawRoute();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                File outputFile = new File(resultPath + imageFileName1 + ".png");
+                try {
+                    ImageIO.write(d1.getImage(), "png", outputFile);
+                    System.out.println("image save success！");
+                } catch (IOException e) {
+                    System.out.println("image save success fail：" + e.getMessage());
+                }
+                result.add(d1.getImage());
+            }
 
-            Draw d1 = null;
-            Draw d2 = null;
-            System.out.println("Route1: " + Route1);
-            System.out.println("Route2: " + Route2);
-            try {
-                d1 = new Draw(Route1, (BufferedImage) FileUtils.openResImage(FileUtils.getMapPath(FileUtils.getFileName(start.building, start.floor))), "Start", "Go to floor " + des.floor);
-                d1.drawRoute();
-                d2 = new Draw(Route2, (BufferedImage) FileUtils.openResImage(FileUtils.getMapPath(FileUtils.getFileName(start.building, des.floor))), "Start", "Destination");
-                d2.drawRoute();
-            } catch (IOException e) {
-                e.printStackTrace();
+            if(FileUtils.fileExists(resultPath + imageFileName2 + ".png")) {
+                try {
+                    result.add(FileUtils.openResImage(FileUtils.getResultPath(imageFileName2 + ".png")));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }else{
+                Draw d2 = null;
+                try {
+                    d2 = new Draw(Route2, (BufferedImage) FileUtils.openResImage(FileUtils.getMapPath(FileUtils.getFileName(start.building, des.floor))), "Start", "Destination");
+                    d2.drawRoute();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                File outputFile = new File(resultPath + imageFileName2 + ".png");
+                try {
+                    ImageIO.write(d2.getImage(), "png", outputFile);
+                    System.out.println("image save success！");
+                } catch (IOException e) {
+                    System.out.println("image save success fail：" + e.getMessage());
+                }
+                result.add(d2.getImage());
             }
-            File outputFile = new File(resultPath + FileUtils.getFileName(start.building, start.floor) + "_result.png");
-            try {
-                ImageIO.write(d1.getImage(), "png", outputFile);
-                System.out.println("image save success！");
-            } catch (IOException e) {
-                System.out.println("image save success fail：" + e.getMessage());
-            }
-            result.add(d1.getImage());
-            outputFile = new File(resultPath + FileUtils.getFileName(start.building, des.floor) + "_result.png");
-            try {
-                ImageIO.write(d2.getImage(), "png", outputFile);
-                System.out.println("image save success！");
-            } catch (IOException e) {
-                System.out.println("image save success fail：" + e.getMessage());
-            }
-            result.add(d2.getImage());
             return result;
         } else if (start.building.equals(des.building) && start.floor == des.floor) {
-            ArrayList<Graph> g = (ArrayList<Graph>) graphRepository.findByNameAndFloor(start.building, start.floor);
-            ArrayList<Node> AllNodes = new ArrayList<Node>();
-            AllNodes.addAll(g.get(0).getGraph_node());
-            ArrayList<Node> Route = calculateRoute(AllNodes, start, des, false, null);
-            System.out.println("Route: " + Route);
-            Draw d = null;
-            try {
-                d = new Draw(Route, (BufferedImage) FileUtils.openResImage(FileUtils.getMapPath(FileUtils.getFileName(start.building, start.floor))), "Start", "Destination");
-                d.drawRoute();
-            } catch (IOException e) {
-                e.printStackTrace();
+            String imageFileName = FileUtils.getResultFileName(start, des);
+            if(FileUtils.fileExists(resultPath + imageFileName + ".png")) {
+                try {
+                    result.add(FileUtils.openResImage(FileUtils.getResultPath(imageFileName + ".png")));
+                    return result;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }else{
+                ArrayList<Graph> g = (ArrayList<Graph>) graphRepository.findByNameAndFloor(start.building, start.floor);
+                ArrayList<Node> AllNodes = new ArrayList<Node>();
+                AllNodes.addAll(g.get(0).getGraph_node());
+                ArrayList<Node> Route = calculateRoute(AllNodes, start, des, false, null);
+                System.out.println("Route: " + Route);
+                Draw d = null;
+                try {
+                    d = new Draw(Route, (BufferedImage) FileUtils.openResImage(FileUtils.getMapPath(FileUtils.getFileName(start.building, start.floor))), "Start", "Destination");
+                    d.drawRoute();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                File outputFile = new File(resultPath + imageFileName + ".png");
+                try {
+                    ImageIO.write(d.getImage(), "png", outputFile);
+                    System.out.println("image save success！");
+                } catch (IOException e) {
+                    System.out.println("image save success fail：" + e.getMessage());
+                }
+                result.add(d.getImage());
             }
-            File outputFile = new File(resultPath + FileUtils.getFileName(start.building, start.floor) + "_result.png");
-            try {
-                ImageIO.write(d.getImage(), "png", outputFile);
-                System.out.println("image save success！");
-            } catch (IOException e) {
-                System.out.println("image save success fail：" + e.getMessage());
-            }
-            result.add(d.getImage());
+
             return result;
 
         } else {
@@ -185,22 +216,30 @@ public class Algorithm {
                         s = "Go into " + Route.get(i).building;
                     }
                     System.out.println("RouteT: " + RouteT);
-                    Draw d = null;
-                    try {
-                        System.out.println(FileUtils.getMapPath(FileUtils.getFileName(p.building, p.floor)));
-                        d = new Draw(RouteT, (BufferedImage) FileUtils.openResImage(FileUtils.getMapPath(FileUtils.getFileName(p.building, p.floor))), "Start", s);
-                        d.drawRoute();
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                    String imageFileName = FileUtils.getResultFileName(RouteT.get(0), RouteT.get(RouteT.size() - 1));
+                    if(FileUtils.fileExists(resultPath + imageFileName + ".png")) {
+                        try {
+                            result.add(FileUtils.openResImage(FileUtils.getResultPath(imageFileName + ".png")));
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }else{
+                        Draw d = null;
+                        try {
+                            d = new Draw(RouteT, (BufferedImage) FileUtils.openResImage(FileUtils.getMapPath(FileUtils.getFileName(p.building, p.floor))), "Start", s);
+                            d.drawRoute();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        File outputFile = new File(resultPath + imageFileName + ".png");
+                        try {
+                            ImageIO.write(d.getImage(), "png", outputFile);
+                            System.out.println("image save success！");
+                        } catch (IOException e) {
+                            System.out.println("image save success fail：" + e.getMessage());
+                        }
+                        result.add(d.getImage());
                     }
-                    File outputFile = new File(resultPath + FileUtils.getFileName(p.building, p.floor));
-                    try {
-                        ImageIO.write(d.getImage(), "png", outputFile);
-                        System.out.println("image save success！");
-                    } catch (IOException e) {
-                        System.out.println("image save success fail：" + e.getMessage());
-                    }
-                    result.add(d.getImage());
                     RouteT = new ArrayList<>();
                 }
                 RouteT.add(Route.get(i));

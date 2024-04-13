@@ -73,6 +73,10 @@ public class FileUtils {
         return "graph/" + fileName;
     }
 
+    public static String getResultPath(String fileName) {
+        return "result/" + fileName;
+    }
+
     public static BufferedImage openResImage(String relPath) throws IOException {
         return ImageIO.read(new File(FileUtils.getStaticResPath() + relPath));
     }
