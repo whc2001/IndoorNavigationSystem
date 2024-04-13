@@ -5,52 +5,52 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 
 @Entity
-public class Coordinate{
-	@Id
-	@GeneratedValue
-	Integer id;
-	public int x;
-	public int y;
-	
-	public Coordinate(int x, int y) {
-		super();
-		this.x = x;
-		this.y = y;
-	}
+public class Coordinate {
+    @Id
+    @GeneratedValue
+    Integer id;
+    public int x;
+    public int y;
 
-	public Coordinate() {
+    public Coordinate(int x, int y) {
+        super();
+        this.x = x;
+        this.y = y;
+    }
 
-	}
+    public Coordinate() {
 
-	@Override
+    }
+
+    @Override
     public String toString() {
         return "Coordinate{" +
                 "x=" + x +
                 ", y=" + y +
                 '}';
     }
-	
-	public boolean equal(Coordinate c) {
-		if(Math.abs(c.x -x)<=5 && Math.abs(c.y - y)<5) {
-			return true;
-		}else {
-			return false;
-		}
-	}
 
-	public int getX() {
-		return x;
-	}
+    public boolean equal(Coordinate c) {
+        if (Math.abs(c.x - x) <= 5 && Math.abs(c.y - y) < 5) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
-	public void setX(int x) {
-		this.x = x;
-	}
+    public int getX() {
+        return x;
+    }
 
-	public int getY() {
-		return y;
-	}
+    public void setX(int x) {
+        this.x = x;
+    }
 
-	public void setY(int y) {
-		this.y = y;
-	}
+    public int getY() {
+        return y;
+    }
+
+    public void setY(int y) {
+        this.y = y;
+    }
 }

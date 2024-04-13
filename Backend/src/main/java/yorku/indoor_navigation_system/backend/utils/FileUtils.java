@@ -1,7 +1,7 @@
 package yorku.indoor_navigation_system.backend.utils;
 
-import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -18,7 +18,7 @@ public class FileUtils {
     }
 
     public static String getStaticResPath() {
-          return staticResPath.replace("\\", "/").replaceAll("/$", "") + "/";
+        return staticResPath.replace("\\", "/").replaceAll("/$", "") + "/";
     }
 
     public static String getFileName(String buildingName, int floor) {

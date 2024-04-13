@@ -5,15 +5,13 @@ import yorku.indoor_navigation_system.backend.models.Coordinate;
 
 import java.util.List;
 
-public interface CoordinateRepository extends JpaRepository<Coordinate, Integer>{
-	
-
-	List<Coordinate> findById(int id);
+public interface CoordinateRepository extends JpaRepository<Coordinate, Integer> {
 
 
-	List<Coordinate> findAll();
-	
+    List<Coordinate> findById(int id);
 
-	
-	
+
+    List<Coordinate> findAll();
+
+
 }

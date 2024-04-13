@@ -5,16 +5,13 @@ import yorku.indoor_navigation_system.backend.models.Node;
 
 import java.util.List;
 
-public interface NodeRepository extends JpaRepository<Node, Integer>{
-	
-
-	List<Node> findById(int id);
+public interface NodeRepository extends JpaRepository<Node, Integer> {
 
 
+    List<Node> findById(int id);
 
-	List<Node> findAll();
-	
 
-	
-	
+    List<Node> findAll();
+
+
 }

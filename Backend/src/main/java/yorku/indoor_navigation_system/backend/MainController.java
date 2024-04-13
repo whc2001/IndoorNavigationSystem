@@ -20,7 +20,10 @@ import yorku.indoor_navigation_system.backend.repos.NodeRepository;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Base64;
 
@@ -61,7 +64,6 @@ public class MainController {
 
         return buildingList;
     }
-
 
 
     @GetMapping("/SetPage")
@@ -117,12 +119,12 @@ public class MainController {
         ArrayList<Graph> result = new ArrayList<>(graphRepository.findByNameAndFloor(name, floor));
         ArrayList<String> rooms = new ArrayList<>();
 
-        for(Node n : result.get(0).getGraph_node()) {
-            if(n.getName()!=null) {
+        for (Node n : result.get(0).getGraph_node()) {
+            if (n.getName() != null) {
                 rooms.add(n.getName());
             }
         }
-        Algorithm.quickSort(rooms, 0, rooms.size()-1);
+        Algorithm.quickSort(rooms, 0, rooms.size() - 1);
         return rooms;
     }
 
@@ -158,27 +160,27 @@ public class MainController {
         Node s = null;
         System.out.println(start);
         for (Graph g : result) {
-            for(Node n : g.getGraph_node()) {
-                if (n.getName()!=null&&n.getName().equals(start)) {
+            for (Node n : g.getGraph_node()) {
+                if (n.getName() != null && n.getName().equals(start)) {
                     s = n;
                 }
             }
         }
         ArrayList<Graph> result2 = new ArrayList<>(graphRepository.findByName(building2));
         Node e = null;
-        for(Graph g : result2) {
-            for(Node n : g.getGraph_node()) {
-                if (n.getName()!=null&&n.getName().equals(end)) {
+        for (Graph g : result2) {
+            for (Node n : g.getGraph_node()) {
+                if (n.getName() != null && n.getName().equals(end)) {
                     e = n;
                 }
             }
         }
         System.out.println(s);
         System.out.println(e);
-        if(s == null || e == null) {
+        if (s == null || e == null) {
             return null;
         }
-        ArrayList<BufferedImage> retImg = algorithm.Navigate( s, e, "src/main/resources/static/result/");
+        ArrayList<BufferedImage> retImg = algorithm.Navigate(s, e, "src/main/resources/static/result/");
         ArrayList<String> base64Images = new ArrayList<>();
         for (BufferedImage img : retImg) {
             try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
