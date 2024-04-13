@@ -1,4 +1,4 @@
-package yorku.indoor_navigation_system.backend;
+package yorku.indoor_navigation_system.backend.models;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

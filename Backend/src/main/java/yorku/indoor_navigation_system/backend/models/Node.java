@@ -1,4 +1,4 @@
-package yorku.indoor_navigation_system.backend;
+package yorku.indoor_navigation_system.backend.models;
 
 import jakarta.persistence.*;
 
@@ -13,20 +13,20 @@ public class Node{
 	Integer id;
 	@ManyToOne
 	@JoinColumn(name = "coordinate_id")
-	Coordinate c;
+	public Coordinate c;
 	@ManyToMany
 	@JoinTable(
 			name = "node_relationship",
 			joinColumns = @JoinColumn(name = "node_id"),
 			inverseJoinColumns = @JoinColumn(name = "related_node_id")
 	)
-	List<Node> Nodes;
-	String name;
-	String position;
-	double nodeId;
-	int floor;
-	String building;
-	int type = 0;
+	public List<Node> Nodes;
+	public String name;
+	public String position;
+	public double nodeId;
+	public int floor;
+	public String building;
+	public int type = 0;
 //-1: cyan, 0:red, 1:blue, 2:green, 3:yellow, 4:pink
 	
 	public Node(Coordinate c, ArrayList<Node> nodes, String name, int type) {

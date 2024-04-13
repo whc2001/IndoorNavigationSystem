@@ -11,13 +11,18 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.*;
+import yorku.indoor_navigation_system.backend.models.Graph;
+import yorku.indoor_navigation_system.backend.models.NavigationInformation;
+import yorku.indoor_navigation_system.backend.models.Node;
+import yorku.indoor_navigation_system.backend.repos.CoordinateRepository;
+import yorku.indoor_navigation_system.backend.repos.GraphRepository;
+import yorku.indoor_navigation_system.backend.repos.NodeRepository;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Base64;
-import java.util.Random;
 
 @CrossOrigin
 @RestController
@@ -98,7 +103,7 @@ public class MainController {
 
     @GetMapping("/MainPage")
     public void MainPage(HttpServletResponse response) throws IOException {
-        ClassPathResource mainPage = new ClassPathResource("Indoor navigation system.html");
+        ClassPathResource mainPage = new ClassPathResource("static/index.html");
         byte[] contentBytes = FileCopyUtils.copyToByteArray(mainPage.getInputStream());
         String htmlContent = new String(contentBytes, "UTF-8");
         response.setContentType("text/html");
