@@ -34,6 +34,41 @@ public class Algorithm {
     @Autowired
     private ResourceLoader resourceLoader;
 
+    public static int compareRooms(String room1, String room2) {
+
+        return room1.compareTo(room2);
+    }
+
+    public static void quickSort(ArrayList<String> arr, int low, int high) {
+        if (low < high) {
+            int pi = partition(arr, low, high);
+            quickSort(arr, low, pi - 1);
+            quickSort(arr, pi + 1, high);
+        }
+    }
+
+    public static int partition(ArrayList<String> arr, int low, int high) {
+        String pivot = arr.get(high);
+
+        int i = low - 1;
+
+        for (int j = low; j < high; j++) {
+            if (compareRooms(arr.get(j), pivot) < 0) {
+                i++;
+
+                String temp = arr.get(i);
+                arr.set(i, arr.get(j));
+                arr.set(j, temp);
+            }
+        }
+        String temp = arr.get(i + 1);
+        arr.set(i + 1, arr.get(high));
+        arr.set(high, temp);
+
+        return i + 1;
+    }
+
+
     public static String convertFileToString(File file) {
         StringBuilder stringBuilder = new StringBuilder();
 
@@ -62,14 +97,22 @@ public class Algorithm {
     public ArrayList<BufferedImage> Navigate(Node start, Node des, String resultPath) {
         System.out.println("Start navigate from " + start.building + ":" + start.name + " to " + des.building + ":" + des.name);
         ArrayList<BufferedImage> result = new ArrayList<BufferedImage>();
+
+        // Handle: Same building, different floor
         if (start.building.equals(des.building) && start.floor != des.floor) {
+            // Get all nodes in the start building and start floor
             ArrayList<Graph> g = (ArrayList<Graph>) graphRepository.findByNameAndFloor(start.building, start.floor);
             ArrayList<Node> AllNodes = new ArrayList<Node>();
             AllNodes.addAll(g.get(0).getGraph_node());
+
+            // Get all nodes in the destination (same) building and destination floor
             g = (ArrayList<Graph>) graphRepository.findByNameAndFloor(start.building, des.floor);
             AllNodes.addAll(g.get(0).getGraph_node());
+
+            // Do the automatic pathfinding
             ArrayList<Node> Route = calculateRoute(AllNodes, start, des, false, null);
 
+            // Split the route into two parts: start -> elevator/stairs and elevator/stairs -> destination
             System.out.println("Route: " + Route);
             ArrayList<Node> Route1 = new ArrayList<>();
             ArrayList<Node> Route2 = new ArrayList<>();
@@ -87,15 +130,18 @@ public class Algorithm {
                 }
                 p = Route.get(i);
             }
+
+            // For the first part
+            // Check if the image already exists in cache. If not, draw the image and save it
             String imageFileName1 = FileUtils.getResultFileName(Route1.get(0), Route1.get(Route1.size() - 1));
             String imageFileName2 = FileUtils.getResultFileName(Route2.get(0), Route2.get(Route2.size() - 1));
-            if(FileUtils.fileExists(resultPath + imageFileName1 + ".png")) {
+            if (FileUtils.fileExists(resultPath + imageFileName1 + ".png")) {
                 try {
                     result.add(FileUtils.openResImage(FileUtils.getResultPath(imageFileName1 + ".png")));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-            }else{
+            } else {
                 Draw d1 = null;
                 try {
                     d1 = new Draw(Route1, (BufferedImage) FileUtils.openResImage(FileUtils.getMapPath(FileUtils.getFileName(start.building, start.floor))), "Start", "Go to floor " + des.floor);
@@ -113,13 +159,14 @@ public class Algorithm {
                 result.add(d1.getImage());
             }
 
-            if(FileUtils.fileExists(resultPath + imageFileName2 + ".png")) {
+            // For the second part, same as above
+            if (FileUtils.fileExists(resultPath + imageFileName2 + ".png")) {
                 try {
                     result.add(FileUtils.openResImage(FileUtils.getResultPath(imageFileName2 + ".png")));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-            }else{
+            } else {
                 Draw d2 = null;
                 try {
                     d2 = new Draw(Route2, (BufferedImage) FileUtils.openResImage(FileUtils.getMapPath(FileUtils.getFileName(start.building, des.floor))), "Start", "Destination");
@@ -137,16 +184,19 @@ public class Algorithm {
                 result.add(d2.getImage());
             }
             return result;
-        } else if (start.building.equals(des.building) && start.floor == des.floor) {
+        }
+
+        // Handle: Same building, same floor
+        else if (start.building.equals(des.building) && start.floor == des.floor) {
             String imageFileName = FileUtils.getResultFileName(start, des);
-            if(FileUtils.fileExists(resultPath + imageFileName + ".png")) {
+            if (FileUtils.fileExists(resultPath + imageFileName + ".png")) {
                 try {
                     result.add(FileUtils.openResImage(FileUtils.getResultPath(imageFileName + ".png")));
                     return result;
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-            }else{
+            } else {
                 ArrayList<Graph> g = (ArrayList<Graph>) graphRepository.findByNameAndFloor(start.building, start.floor);
                 ArrayList<Node> AllNodes = new ArrayList<Node>();
                 AllNodes.addAll(g.get(0).getGraph_node());
@@ -171,14 +221,24 @@ public class Algorithm {
 
             return result;
 
-        } else {
+        }
+
+        // Handle: Different building
+        else {
+            // Get all nodes in the start building and start floor
             ArrayList<Node> AllNodes = new ArrayList<Node>();
             ArrayList<Graph> g = (ArrayList<Graph>) graphRepository.findByNameAndFloor(start.building, start.floor);
             AllNodes.addAll(g.get(0).getGraph_node());
+
+            // Get all nodes in the destination building and destination floor
             g = (ArrayList<Graph>) graphRepository.findByNameAndFloor(des.building, des.floor);
             AllNodes.addAll(g.get(0).getGraph_node());
+
+            // Get all nodes in the outside big map (campus)
             g = (ArrayList<Graph>) graphRepository.findByNameAndFloor("Campus", 0);
             AllNodes.addAll(g.get(0).getGraph_node());
+
+            // Create a map to store the nodes in each building
             Map<String, ArrayList<Integer>> m = new HashMap<>();
             m.put(start.building, new ArrayList<Integer>());
             m.put(des.building, new ArrayList<Integer>());
@@ -186,20 +246,27 @@ public class Algorithm {
             m.get(des.building).add(des.floor);
             m.put("Campus", new ArrayList<Integer>());
             m.get("Campus").add(0);
+
+            // If the start building is not in the first floor, add the first floor of the start building
             if (start.floor != 1) {
                 g = (ArrayList<Graph>) graphRepository.findByNameAndFloor(start.building, 1);
                 AllNodes.addAll(g.get(0).getGraph_node());
                 m.get(start.building).add(1);
 
             }
+
+            // If the destination building is not in the first floor, add the first floor of the destination building
             if (des.floor != 1) {
                 g = (ArrayList<Graph>) graphRepository.findByNameAndFloor(des.building, 1);
                 AllNodes.addAll(g.get(0).getGraph_node());
                 m.get(des.building).add(1);
             }
+
+            // Do the automatic pathfinding
             ArrayList<Node> Route = calculateRoute(AllNodes, start, des, true, m);
             System.out.println("Route: " + Route);
 
+            // Split the route into different parts
             ArrayList<Node> RouteT = new ArrayList<>();
             Node p = Route.get(0);
             RouteT.add(p);
@@ -217,13 +284,13 @@ public class Algorithm {
                     }
                     System.out.println("RouteT: " + RouteT);
                     String imageFileName = FileUtils.getResultFileName(RouteT.get(0), RouteT.get(RouteT.size() - 1));
-                    if(FileUtils.fileExists(resultPath + imageFileName + ".png")) {
+                    if (FileUtils.fileExists(resultPath + imageFileName + ".png")) {
                         try {
                             result.add(FileUtils.openResImage(FileUtils.getResultPath(imageFileName + ".png")));
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
-                    }else{
+                    } else {
                         Draw d = null;
                         try {
                             d = new Draw(RouteT, (BufferedImage) FileUtils.openResImage(FileUtils.getMapPath(FileUtils.getFileName(p.building, p.floor))), "Start", s);
@@ -265,6 +332,7 @@ public class Algorithm {
         }
     }
 
+    // Automatic pathfinding algorithm
     public ArrayList<Node> calculateRoute(ArrayList<Node> graph, Node start, Node des, boolean type, Map<String, ArrayList<Integer>> m) {
         Map<Node, Double> distance = new HashMap<Node, Double>();
         Map<Node, ArrayList<Node>> route = new HashMap<Node, ArrayList<Node>>();
@@ -320,6 +388,7 @@ public class Algorithm {
 
     }
 
+    //
     public boolean checkNode(Node n, Map<String, ArrayList<Integer>> m) {
         for (String s : m.keySet()) {
             if (n.building.equals(s) && m.get(s).contains(n.floor)) {
@@ -329,6 +398,7 @@ public class Algorithm {
         return false;
     }
 
+    // Calculate the distance between two nodes
     public double NodeDisCalculate(Node n1, Node n2) {
         if ((n1.type == 4 && n2.type == 4 || n1.type == 1 && n2.type == 1 || n1.type == 5 && n2.type == 5) && n1.position.equals(n2.position)) {
             return 0;
@@ -336,7 +406,7 @@ public class Algorithm {
         return Math.sqrt((n1.c.x - n2.c.x) * (n1.c.x - n2.c.x) + (n1.c.y - n2.c.y) * (n1.c.y - n2.c.y));
     }
 
-
+    // For maintenance: build graph from json data
     public void BuildGraphV2(String json) {
         Graph g = new Graph();
         g.graph_node = new ArrayList<>();
@@ -389,40 +459,7 @@ public class Algorithm {
         graphRepository.save(g);
     }
 
-    public static void quickSort(ArrayList<String> arr, int low, int high) {
-        if (low < high) {
-            int pi = partition(arr, low, high);
-            quickSort(arr, low, pi - 1);
-            quickSort(arr, pi + 1, high);
-        }
-    }
-
-    public static int partition(ArrayList<String> arr, int low, int high) {
-        String pivot = arr.get(high);
-
-        int i = low - 1;
-
-        for (int j = low; j < high; j++) {
-            if (compareRooms(arr.get(j), pivot) < 0) {
-                i++;
-
-                String temp = arr.get(i);
-                arr.set(i, arr.get(j));
-                arr.set(j, temp);
-            }
-        }
-        String temp = arr.get(i + 1);
-        arr.set(i + 1, arr.get(high));
-        arr.set(high, temp);
-
-        return i + 1;
-    }
-
-    public static int compareRooms(String room1, String room2) {
-
-        return room1.compareTo(room2);
-    }
-
+    // For maintenance: link floors with stairs and elevators
     public void connectFloor() {
         List<String> BuildingList = graphRepository.findAllDistinctNames();
         System.out.println(BuildingList);
@@ -465,10 +502,9 @@ public class Algorithm {
                 }
             }
         }
-
-
     }
 
+    // For maintenance: link buildings with outside doors
     public void connectBuilding() {
         List<String> BuildingList = graphRepository.findAllDistinctNames();
         Map<String, ArrayList<Node>> exit = new HashMap<>();
