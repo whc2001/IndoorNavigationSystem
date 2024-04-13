@@ -10,7 +10,7 @@ import java.util.List;
 public class Node {
     @Id
     @GeneratedValue
-    Integer id;
+    public Integer id;
     @ManyToOne
     @JoinColumn(name = "coordinate_id")
     public Coordinate c;
