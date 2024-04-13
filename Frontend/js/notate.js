@@ -51,7 +51,7 @@ let invalidNodesFlashingTimer;
 let invalidNodesFlashingState = false;
 
 function recalculateGraphSize(scale) {
-    graphSizeValue = Math.round(-8 * scale + 22.31);
+    graphSizeValue = Math.round(-20 * scale + 22.31);
     numGraphSize.value = graphSizeValue;
 }
 
