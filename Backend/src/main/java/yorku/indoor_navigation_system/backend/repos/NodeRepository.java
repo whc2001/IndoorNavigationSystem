@@ -1,6 +1,7 @@
-package yorku.indoor_navigation_system.backend;
+package yorku.indoor_navigation_system.backend.repos;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import yorku.indoor_navigation_system.backend.models.Node;
 
 import java.util.List;
 

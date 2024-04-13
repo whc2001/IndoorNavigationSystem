@@ -2,17 +2,19 @@ package yorku.indoor_navigation_system.backend;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import net.sourceforge.tess4j.ITesseract;
-import net.sourceforge.tess4j.Tesseract;
-import net.sourceforge.tess4j.TesseractException;
-import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
+import yorku.indoor_navigation_system.backend.models.Coordinate;
+import yorku.indoor_navigation_system.backend.models.Draw;
+import yorku.indoor_navigation_system.backend.models.Graph;
+import yorku.indoor_navigation_system.backend.models.Node;
+import yorku.indoor_navigation_system.backend.repos.CoordinateRepository;
+import yorku.indoor_navigation_system.backend.repos.GraphRepository;
+import yorku.indoor_navigation_system.backend.repos.NodeRepository;
+import yorku.indoor_navigation_system.backend.utils.FileUtils;
 
 import javax.imageio.ImageIO;
-import javax.imageio.stream.ImageOutputStream;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.lang.reflect.Type;

@@ -1,14 +1,10 @@
-package yorku.indoor_navigation_system.backend;
+package yorku.indoor_navigation_system.backend.models;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import jakarta.persistence.*;
+import yorku.indoor_navigation_system.backend.models.Node;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Entity
 public class Graph {
@@ -21,11 +17,11 @@ public class Graph {
 			joinColumns = @JoinColumn(name = "graph_id"),
 			inverseJoinColumns = @JoinColumn(name = "node_id")
 	)
-	List<Node> graph_node;
-	String name;
+	public List<Node> graph_node;
+	public String name;
 
-	Integer floor;
-	String mapPath;
+	public Integer floor;
+	public String mapPath;
 
 
 	public Graph() {

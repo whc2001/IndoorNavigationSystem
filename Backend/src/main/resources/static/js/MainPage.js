@@ -4,7 +4,7 @@ var apiServer = isProduction ? "https://indoornav.haoc.wang" : "http://127.0.0.1
 var button = document.getElementById('jumpButton');1
 
 button.addEventListener('click', function () {
-    var targetUrl = apiServer+'/Main/MainPage';
+    var targetUrl = apiServer+'/api/apiPage';
 
     window.location.href = targetUrl;
 });
@@ -20,7 +20,7 @@ $(document).ready(function () {
     var List;
     $.ajax(
         {
-            url: apiServer +  "/Main/GetBuildingList",
+            url: apiServer +  "/api/GetBuildingList",
             type: "GET",
             success: function (data) {
 
@@ -107,7 +107,7 @@ document.getElementById('NavigateButton').addEventListener('click', function (ev
     var container = document.getElementById('imageContainer2');
 
     $.ajax({
-        url: apiServer + '/Main/Navigate',
+        url: apiServer + '/api/Navigate',
         type: 'POST',
         contentType: 'application/json',
         data: JSON.stringify(formData),
@@ -168,7 +168,7 @@ document.getElementById('LoadButton').addEventListener('click', function (event)
         var imgElement = document.getElementById('mapImage');
 
         $.ajax({
-            url: apiServer + '/Main/Load',
+            url: apiServer + '/api/Load',
             type: 'POST',
             contentType: 'application/json',
             data: JSON.stringify(formData),
@@ -276,7 +276,7 @@ $(document).ready(function() {
             floor: floor,
         };
         $.ajax({
-            url: apiServer + '/Main/GetRooms',
+            url: apiServer + '/api/GetRooms',
             type: 'POST',
             contentType: 'application/json',
             data: JSON.stringify(formData),

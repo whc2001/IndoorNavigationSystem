@@ -1,4 +1,6 @@
-package yorku.indoor_navigation_system.backend;
+package yorku.indoor_navigation_system.backend.models;
+
+import yorku.indoor_navigation_system.backend.models.Node;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
