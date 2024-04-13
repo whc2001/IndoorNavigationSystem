@@ -103,14 +103,14 @@ public class MainController {
         return "Reset successfully ";
     }
 
-    @GetMapping("/MainPage")
-    public void MainPage(HttpServletResponse response) throws IOException {
-        ClassPathResource mainPage = new ClassPathResource("static/index.html");
-        byte[] contentBytes = FileCopyUtils.copyToByteArray(mainPage.getInputStream());
-        String htmlContent = new String(contentBytes, "UTF-8");
-        response.setContentType("text/html");
-        response.getWriter().write(htmlContent);
-    }
+//    @GetMapping("/MainPage")
+//    public void MainPage(HttpServletResponse response) throws IOException {
+//        ClassPathResource mainPage = new ClassPathResource("static/index.html");
+//        byte[] contentBytes = FileCopyUtils.copyToByteArray(mainPage.getInputStream());
+//        String htmlContent = new String(contentBytes, "UTF-8");
+//        response.setContentType("text/html");
+//        response.getWriter().write(htmlContent);
+//    }
 
     @PostMapping("/GetRooms")
     public ArrayList<String> GetRooms(@RequestBody NavigationInformation NI) {
