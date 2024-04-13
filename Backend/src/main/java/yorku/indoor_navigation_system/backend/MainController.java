@@ -26,7 +26,7 @@ import java.util.Base64;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/Main")
+@RequestMapping("/api")
 public class MainController {
 
     @Autowired
