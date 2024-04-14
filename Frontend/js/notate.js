@@ -549,6 +549,8 @@ function onGraphSizeChange() {
 }
 
 function initCanvas(width, height) {
+    if(canvas)
+        canvas.dispose();
     canvas = new fabric.Canvas("cvsMain", {
         width: width,
         height: height,
@@ -592,6 +594,15 @@ function onLoadImage() {
     canvas.setViewportTransform([scale, 0, 0, scale, translateX, translateY]);
 
     recalculateGraphSize(scale);
+
+    id = 0;
+    isPanning = false;
+    isConnecting = false;
+    connectStartNode = null;
+    connectWire = null;
+    invalidNodes = new Set();
+    invalidNodesFlashingTimer = null;
+    invalidNodesFlashingState = false;
 
     btnImportJSON.removeAttribute("disabled");
     btnValidateGraph.removeAttribute("disabled");
