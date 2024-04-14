@@ -119,23 +119,16 @@ document.getElementById('NavigateButton').addEventListener('click', function (ev
 
             container.innerHTML = "";
 
-            var mainImage = document.getElementById('mapImage');
-            mainImage.src = 'data:image/jpeg;base64,' + response[0];
-
-            var description = document.createElement('p');
-            description.textContent = 'This is the route you have selected.';
-            container.appendChild(description);
-
-            response.forEach(function (base64Image) {
+            response.forEach(function (imgFileName) {
                 var imgElement = document.createElement('img');
-                imgElement.src = 'data:image/jpeg;base64,' + base64Image;
+                imgElement.src = "/result/" + imgFileName + ".png";
                 imgElement.style.width = "150px";
                 imgElement.style.height = "150px";
                 imgElement.style.margin = "10px";
                 imgElement.style.marginTop = "3px";
                 imgElement.addEventListener('click', function () {
                     var imgElement = document.getElementById('mapImage');
-                    imgElement.src = 'data:image/jpeg;base64,' + base64Image;
+                    imgElement.src = "/result/" + imgFileName + ".png";
                 });
 
                 var thumbnailDiv = document.createElement('div');
@@ -145,6 +138,13 @@ document.getElementById('NavigateButton').addEventListener('click', function (ev
 
                 container.appendChild(thumbnailDiv);
             });
+
+            var mainImage = document.getElementById('mapImage');
+            mainImage.src = "/result/" + response[0] + ".png";
+
+            var description = document.createElement('p');
+            description.textContent = 'This is the route you have selected.';
+            container.appendChild(description);
         },
         error: function (request, msg, error) {
             console.error('Error:', error);

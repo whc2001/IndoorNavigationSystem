@@ -180,20 +180,6 @@ public class MainController {
         if (s == null || e == null) {
             return null;
         }
-        ArrayList<BufferedImage> retImg = algorithm.Navigate(s, e, "src/main/resources/static/result/");
-        ArrayList<String> base64Images = new ArrayList<>();
-        for (BufferedImage img : retImg) {
-            try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
-                ImageIO.write(img, "png", outputStream);
-                base64Images.add(Base64.getEncoder().encodeToString(outputStream.toByteArray()));
-            } catch (IOException ex) {
-                ex.printStackTrace();
-                return null;
-            }
-        }
-        return base64Images;
-
+        return algorithm.Navigate(s, e, "src/main/resources/static/result/");
     }
 }
-
-
