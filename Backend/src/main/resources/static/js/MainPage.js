@@ -1,22 +1,33 @@
-var isProduction = false;
-var apiServer = isProduction ? "https://indoornav.haoc.wang" : "http://127.0.0.1:4090";
+const isProduction = false;
+const apiServer = isProduction ? "https://indoornav.haoc.wang" : "http://127.0.0.1:4090";
 
-var button = document.getElementById('jumpButton');1
+const imgElement = document.getElementById('mapImage');
+var currentWidth = document.documentElement.clientWidth;
 
-button.addEventListener('click', function () {
+function scrollToTop() {
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
+}
+
+function scrollToBottom() {
+    var bodyHeight = document.body.scrollHeight;
+    var scrollDistance = bodyHeight;
+    window.scroll({
+        top: scrollDistance,
+        behavior: 'smooth'
+    });
+}
+
+document.getElementById('jumpButton').addEventListener('click', function () {
     var targetUrl = apiServer+'/api/apiPage';
-
     window.location.href = targetUrl;
 });
 
-
-const imgElement = document.getElementById('mapImage');
-
-var currentWidth = document.documentElement.clientWidth;
-
-imgElement.style.width = currentWidth / 1.4 + "px";
-
 $(document).ready(function () {
+    imgElement.style.width = currentWidth / 1.4 + "px";
+
     var List;
     $.ajax(
         {
@@ -106,12 +117,29 @@ document.getElementById('NavigateButton').addEventListener('click', function (ev
     };
     var container = document.getElementById('imageContainer2');
 
+    // Show loading information and disable the button
+    document.getElementById("NavigateButton").setAttribute("disabled", "disabled");
+    document.getElementById("loading1").style.visibility = "visible";
+    const loading2Timer = setTimeout(function () {
+        document.getElementById("loading2").style.visibility = "visible";
+    }, 3000);
+    document.getElementById("loading_success").style.visibility = "hidden";
+    document.getElementById("loading_error").style.visibility = "hidden";
+
     $.ajax({
         url: apiServer + '/api/Navigate',
         type: 'POST',
         contentType: 'application/json',
         data: JSON.stringify(formData),
         success: function (response) {
+            // Enable the button and hide the loading information
+            document.getElementById("NavigateButton").removeAttribute("disabled");
+            clearTimeout(loading2Timer);
+            document.getElementById("loading1").style.visibility = "hidden";
+            document.getElementById("loading2").style.visibility = "hidden";
+            document.getElementById("loading_success").style.visibility = "visible";
+            document.getElementById("loading_error").style.visibility = "hidden";
+
             if (response == null || response.length === 0) {
                 alert('Wrong input, please enter again.');
                 return;
@@ -147,7 +175,13 @@ document.getElementById('NavigateButton').addEventListener('click', function (ev
             container.appendChild(description);
         },
         error: function (request, msg, error) {
-            console.error('Error:', error);
+            // Enable the button and hide the loading information
+            document.getElementById("NavigateButton").removeAttribute("disabled");
+            clearTimeout(loading2Timer);
+            document.getElementById("loading1").style.visibility = "hidden";
+            document.getElementById("loading2").style.visibility = "hidden";
+            document.getElementById("loading_success").style.visibility = "hidden";
+            document.getElementById("loading_error").style.visibility = "visible";
         }
     });
 });
@@ -240,33 +274,19 @@ window.onscroll = function () {
     }
 };
 
-function scrollToTop() {
-
-    window.scrollTo({
-        top: 0,
-        behavior: 'smooth'
-    });
-}
-
-function scrollToBottom() {
-    var bodyHeight = document.body.scrollHeight;
-
-    var scrollDistance = bodyHeight;
-
-    window.scroll({
-        top: scrollDistance,
-        behavior: 'smooth'
-    });
-}
-
 $(document).ready(function() {
     $('#nameSelect, #floorSelect').change(function() {
         var selectedBuilding = $('#nameSelect').val();
         var selectedFloor = $('#floorSelect').val();
 
         if (selectedBuilding !== '' && selectedFloor !== '') {
+            document.getElementById("select_to_view").style.visibility = "hidden";
             console.log('fetching rooms');
             fetchAndDisplayRooms(selectedBuilding, selectedFloor);
+        }
+        else {
+            document.getElementById("accessibleRoomsTable").style.visibility = "hidden";
+            document.getElementById("select_to_view").style.visibility = "visible";
         }
     });
     function fetchAndDisplayRooms(building, floor) {
@@ -314,6 +334,8 @@ $(document).ready(function() {
 
             $('#accessibleRoomsTable tbody').append(rowHtml);
         }
+
+        document.getElementById("accessibleRoomsTable").style.visibility = "visible";
     }
 });
 

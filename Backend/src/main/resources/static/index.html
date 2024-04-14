@@ -25,6 +25,15 @@
             <button type="submit" id = "LoadButton">Load Map</button>
         </form>
 
+        <div class="TableContainer">
+            <label>Currently Accessible Rooms:</label>
+            <div id="select_to_view">Please select a building and a floor to view</div>
+            <table id="accessibleRoomsTable" border="1">
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+
         <form action="/Main/Navigate" method="GET">
             <label>Navigate:</label>
 
@@ -43,15 +52,11 @@
                 <input type="text" id="end" name="end" placeholder="destination" required>
             </div>
             <button type="submit" id = "NavigateButton">Navigate</button>
+            <div id="loading1" style="visibility: hidden;" >Loading...</div>
+            <div id="loading2" style="visibility: hidden;">It might take several seconds to generate the result...</div>
+            <div id="loading_success" style="visibility: hidden;">Please check the result below</div>
+            <div id="loading_error" style="visibility: hidden;">Load failed</div>
         </form>
-
-        <div class="TableContainer">
-            <p>Currently Accessible Rooms:</p>
-            <table id="accessibleRoomsTable" border="1">
-                <tbody>
-                </tbody>
-            </table>
-        </div>
     </div>
 
     <div id = "imageContainer1">
