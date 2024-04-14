@@ -21,7 +21,7 @@ function scrollToBottom() {
 }
 
 document.getElementById('jumpButton').addEventListener('click', function () {
-    var targetUrl = apiServer+'/api/apiPage';
+    var targetUrl = apiServer + '/api/apiPage';
     window.location.href = targetUrl;
 });
 
@@ -31,7 +31,7 @@ $(document).ready(function () {
     var List;
     $.ajax(
         {
-            url: apiServer +  "/api/GetBuildingList",
+            url: apiServer + "/api/GetBuildingList",
             type: "GET",
             success: function (data) {
 
@@ -44,7 +44,7 @@ $(document).ready(function () {
                 var select2 = document.getElementsByName("name")[1];
                 var select3 = document.getElementsByName("name")[2];
                 for (var i = 0; i < buildingList.length; i++) {
-                    if (addedOptions.indexOf(buildingList[i].name) === -1&&buildingList[i].name!=="Campus") {
+                    if (addedOptions.indexOf(buildingList[i].name) === -1 && buildingList[i].name !== "Campus") {
                         var option = document.createElement("option");
                         option.text = buildingList[i].name;
                         option.value = buildingList[i].name;
@@ -74,7 +74,7 @@ $(document).ready(function () {
             return item.name === selectedBuilding;
         });
 
-        filteredFloors.sort(function(a, b) {
+        filteredFloors.sort(function (a, b) {
             return a.floor - b.floor;
         });
 
@@ -274,8 +274,8 @@ window.onscroll = function () {
     }
 };
 
-$(document).ready(function() {
-    $('#nameSelect, #floorSelect').change(function() {
+$(document).ready(function () {
+    $('#nameSelect, #floorSelect').change(function () {
         var selectedBuilding = $('#nameSelect').val();
         var selectedFloor = $('#floorSelect').val();
 
@@ -283,14 +283,14 @@ $(document).ready(function() {
             document.getElementById("select_to_view").style.visibility = "hidden";
             console.log('fetching rooms');
             fetchAndDisplayRooms(selectedBuilding, selectedFloor);
-        }
-        else {
+        } else {
             document.getElementById("accessibleRoomsTable").style.visibility = "hidden";
             document.getElementById("select_to_view").style.visibility = "visible";
         }
     });
+
     function fetchAndDisplayRooms(building, floor) {
-        var roomsData ;
+        var roomsData;
         var formData = {
             name: building,
             floor: floor,
@@ -300,16 +300,17 @@ $(document).ready(function() {
             type: 'POST',
             contentType: 'application/json',
             data: JSON.stringify(formData),
-            success: function(data) {
+            success: function (data) {
                 updateRoomsTable(data);
             },
-            error: function() {
+            error: function () {
                 alert('Error fetching rooms data');
             }
         });
 
 
     }
+
     function updateRoomsTable(rooms) {
         $('#accessibleRoomsTable tbody').empty();
 
