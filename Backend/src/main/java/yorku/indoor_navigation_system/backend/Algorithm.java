@@ -145,6 +145,8 @@ public class Algorithm {
                     e.printStackTrace();
                 }
             }
+            else
+                FileUtils.updateLastAccessTime(imageFilePath1);
             result.add(imageFileName1);
 
             // For the second part, same as above
@@ -160,6 +162,8 @@ public class Algorithm {
                 }
 
             }
+            else
+                FileUtils.updateLastAccessTime(imageFilePath2);
             result.add(imageFileName2);
             return result;
         }
@@ -182,6 +186,8 @@ public class Algorithm {
                     e.printStackTrace();
                 }
             }
+            else
+                FileUtils.updateLastAccessTime(imageFilePath);
             result.add(imageFileName);
             return result;
         }
@@ -257,6 +263,8 @@ public class Algorithm {
                             e.printStackTrace();
                         }
                     }
+                    else
+                        FileUtils.updateLastAccessTime(imageFilePath);
                     result.add(imageFileName);
                     RouteT = new ArrayList<>();
                 }
@@ -277,6 +285,8 @@ public class Algorithm {
                     e.printStackTrace();
                 }
             }
+            else
+                FileUtils.updateLastAccessTime(imageFilePath);
             result.add(imageFileName);
             return result;
         }
