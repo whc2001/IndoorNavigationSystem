@@ -34,6 +34,7 @@ let btnOpenImage, btnImportJSON, btnValidateGraph, btnExportJSON;
 let txtBuilding, txtFloor;
 let optEdit, optInspect, optAttribute;
 let numGraphSize;
+let chkAttributeAfterPlacement;
 let optConnector, optCorridor, optStair, optInsideDoor, optClassroom, optElevator, optOutsideDoor;
 let nodeTypeHotkeyTarget = [];
 let cvsMain, canvas;
@@ -460,7 +461,12 @@ function onCanvasMouseDown(o) {
             else if (!target) {
                 if (pointer.x >= 0 && pointer.y >= 0 && pointer.x <= canvas.backgroundImage.width && pointer.y <= canvas.backgroundImage.height) {
                     const type = getSelectedNodeType();
-                    placeNewNode(type, pointer.x, pointer.y);
+                    const newNode = placeNewNode(type, pointer.x, pointer.y);
+                    if(chkAttributeAfterPlacement.checked && nodeAttributeName[type]) {
+                        const data = prompt("Enter attribute data: " + nodeAttributeName[type]);
+                        if (data)
+                            newNode.appProperties.data = data;
+                    }
                     canvas.renderAll();
                 }
             }
@@ -628,6 +634,8 @@ function init() {
 
     numGraphSize = document.getElementById("numGraphSize");
     numGraphSize.addEventListener("change", onGraphSizeChange);
+
+    chkAttributeAfterPlacement = document.getElementById("chkAttributeAfterPlacement");
 
     optConnector = document.getElementById("optConnector");
     optCorridor = document.getElementById("optCorridor");
