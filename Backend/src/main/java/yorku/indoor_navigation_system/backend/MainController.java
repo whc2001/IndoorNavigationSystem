@@ -10,6 +10,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
+import org.springframework.lang.NonNull;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.*;
 import yorku.indoor_navigation_system.backend.models.Graph;
@@ -34,6 +35,7 @@ import java.util.Base64;
 @RequestMapping("/api")
 public class MainController {
     @Value("${application.maintenance.token}")
+    @NonNull
     private String maintenanceToken;
 
     @Autowired

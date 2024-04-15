@@ -1,6 +1,7 @@
 package yorku.indoor_navigation_system.backend.utils;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import yorku.indoor_navigation_system.backend.models.Node;
 
@@ -15,6 +16,7 @@ public class FileUtils {
     private static String staticResPath;
 
     @Value("${application.staticres.path}")
+    @NonNull
     private void setStaticResPath(String staticResPath) {
         this.staticResPath = staticResPath;
     }
