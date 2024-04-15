@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -31,6 +32,8 @@ import java.util.Base64;
 @RestController
 @RequestMapping("/api")
 public class MainController {
+    @Value("${application.maintenance.token}")
+    private String maintenanceToken;
 
     @Autowired
     private GraphRepository graphRepository;
@@ -67,7 +70,12 @@ public class MainController {
 
 
     @GetMapping("/SetPage")
-    public void SetPageV2() {
+    public String SetPageV2(HttpServletRequest request, HttpServletResponse response) {
+        if(request.getHeader("Authorization") == null || !request.getHeader("Authorization").equals(maintenanceToken)){
+            response.setStatus(403);
+            return null;
+        }
+
         try {
             ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
             Resource[] resources = resolver.getResources("classpath:static/json/*");
@@ -81,16 +89,21 @@ public class MainController {
             algorithm.connectFloor();
             algorithm.connectBuilding();
 
+            return "Success";
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("Failed to load files from classpath.");
         }
         System.out.println("Finished loading files from classpath.");
-
     }
 
     @GetMapping("/Reset")
     public String Reset(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        if(request.getHeader("Authorization") == null || !request.getHeader("Authorization").equals(maintenanceToken)){
+            response.setStatus(403);
+            return null;
+        }
+
         if (graphRepository.count() > 0) {
             graphRepository.deleteAll();
         }
@@ -100,7 +113,8 @@ public class MainController {
         if (coordinateRepository.count() > 0) {
             coordinateRepository.deleteAll();
         }
-        return "Reset successfully ";
+
+        return "Success";
     }
 
 //    @GetMapping("/MainPage")
