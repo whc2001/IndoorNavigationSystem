@@ -92,9 +92,9 @@ public class MainController {
             return "Success";
         } catch (IOException e) {
             e.printStackTrace();
-            System.out.println("Failed to load files from classpath.");
+            response.setStatus(500);
+            return null;
         }
-        System.out.println("Finished loading files from classpath.");
     }
 
     @GetMapping("/Reset")
