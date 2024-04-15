@@ -18,6 +18,7 @@ import yorku.indoor_navigation_system.backend.models.Node;
 import yorku.indoor_navigation_system.backend.repos.CoordinateRepository;
 import yorku.indoor_navigation_system.backend.repos.GraphRepository;
 import yorku.indoor_navigation_system.backend.repos.NodeRepository;
+import yorku.indoor_navigation_system.backend.utils.FileUtils;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -77,20 +78,17 @@ public class MainController {
         }
 
         try {
-            ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-            Resource[] resources = resolver.getResources("classpath:static/json/*");
-
-            for (Resource resource : resources) {
-                File file = resource.getFile();
-                System.out.println(file.getName());
-                System.out.println(Algorithm.convertFileToString(file));
-                algorithm.BuildGraphV2(Algorithm.convertFileToString(file));
+            File dir = new File(FileUtils.getStaticResPath() + "/json");
+            for(File f : dir.listFiles()) {
+                System.out.println("Processing " + f.getName());
+                algorithm.BuildGraphV2(Algorithm.convertFileToString(f.getAbsoluteFile()));
             }
+
             algorithm.connectFloor();
             algorithm.connectBuilding();
 
             return "Success";
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             response.setStatus(500);
             return null;
