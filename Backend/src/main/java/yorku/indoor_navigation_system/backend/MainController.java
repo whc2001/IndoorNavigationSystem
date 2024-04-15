@@ -194,6 +194,6 @@ public class MainController {
         if (s == null || e == null) {
             return null;
         }
-        return algorithm.Navigate(s, e, "src/main/resources/static/result/");
+        return algorithm.Navigate(s, e, FileUtils.getStaticResPath() + "/result");
     }
 }
