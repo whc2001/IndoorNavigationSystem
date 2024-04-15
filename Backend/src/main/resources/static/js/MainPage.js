@@ -1,5 +1,5 @@
 const isProduction = false;
-const apiServer = isProduction ? "https://indoornav.haoc.wang" : "http://127.0.0.1:4090";
+const apiServer = isProduction ? "https://gradproj.haoc.wang" : "http://127.0.0.1:4090";
 
 const imgElement = document.getElementById('mapImage');
 var currentWidth = document.documentElement.clientWidth;
