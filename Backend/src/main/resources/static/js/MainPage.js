@@ -21,8 +21,7 @@ function scrollToBottom() {
 }
 
 document.getElementById('jumpButton').addEventListener('click', function () {
-    var targetUrl = apiServer + '/api/apiPage';
-    window.location.href = targetUrl;
+    location.reload();
 });
 
 $(document).ready(function () {
