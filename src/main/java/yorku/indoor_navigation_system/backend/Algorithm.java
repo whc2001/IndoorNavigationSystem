@@ -95,8 +95,10 @@ public class Algorithm {
 
 
     public ArrayList<String> Navigate(Node start, Node des, String resultPath) {
+
         System.out.println("Start navigate from " + start.building + ":" + start.name + " to " + des.building + ":" + des.name);
         ArrayList<String> result = new ArrayList<String>();
+        (new File(resultPath)).mkdirs();
 
         // Handle: Same building, different floor
         if (start.building.equals(des.building) && start.floor != des.floor) {
