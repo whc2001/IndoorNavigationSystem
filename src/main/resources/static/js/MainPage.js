@@ -44,20 +44,23 @@ $(document).ready(function () {
                 var select3 = document.getElementsByName("name")[2];
                 for (var i = 0; i < buildingList.length; i++) {
                     if (addedOptions.indexOf(buildingList[i].name) === -1 && buildingList[i].name !== "Campus") {
-                        var option = document.createElement("option");
-                        option.text = buildingList[i].name;
-                        option.value = buildingList[i].name;
-                        select.appendChild(option);
-                        var option = document.createElement("option");
-                        option.text = buildingList[i].name;
-                        option.value = buildingList[i].name;
-                        select2.appendChild(option);
-                        var option = document.createElement("option");
-                        option.text = buildingList[i].name;
-                        option.value = buildingList[i].name;
-                        select3.appendChild(option);
                         addedOptions.push(buildingList[i].name);
                     }
+                }
+                addedOptions.sort();
+                for (var i = 0; i < addedOptions.length; i++) {
+                    var option = document.createElement("option");
+                    option.text = addedOptions[i];
+                    option.value = addedOptions[i];
+                    select.appendChild(option);
+                    var option = document.createElement("option");
+                    option.text = addedOptions[i];
+                    option.value = addedOptions[i];
+                    select2.appendChild(option);
+                    var option = document.createElement("option");
+                    option.text = addedOptions[i];
+                    option.value = addedOptions[i];
+                    select3.appendChild(option);
                 }
             },
             error: function () {
@@ -340,3 +343,17 @@ $(document).ready(function () {
 });
 
 document.getElementById('scrollToBottom').addEventListener('click', scrollToBottom);
+
+document.getElementById("mapImage").addEventListener('click', function () {
+    const img = new Image();
+    img.src = document.getElementById('mapImage').src;
+    const viewer = new Viewer(img, {
+        navbar: 0,
+        toolbar: 0,
+        title: 0,
+        hidden: function () {
+            viewer.destroy();
+        },
+    });
+    viewer.show();
+});

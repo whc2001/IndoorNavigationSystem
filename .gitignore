@@ -35,3 +35,4 @@ build/
 ### Resources ###
 src/main/resources/static/result/
 Backend/src/main/resources/static/static.zip
+.idea/workspace.xml
