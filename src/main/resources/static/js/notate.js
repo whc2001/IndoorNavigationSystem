@@ -582,6 +582,7 @@ function initCanvas(width, height) {
 }
 
 function onLoadImage() {
+    cvsMain.style.visibility = "visible";
     initCanvas(grpCanvas.clientWidth, grpCanvas.clientHeight);
 
     canvas.setBackgroundImage(new fabric.Image(image), canvas.renderAll.bind(canvas), {

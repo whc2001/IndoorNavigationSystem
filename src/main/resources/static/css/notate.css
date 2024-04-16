@@ -48,6 +48,7 @@ body {
     border: 1px solid #000;
 }
 
-canvas {
+#cvsMain {
     border: 1px solid #666;
+    visibility: hidden;
 }
