@@ -124,7 +124,7 @@ document.getElementById('NavigateButton').addEventListener('click', function (ev
     document.getElementById("loading1").style.visibility = "visible";
     const loading2Timer = setTimeout(function () {
         document.getElementById("loading2").style.visibility = "visible";
-    }, 3000);
+    }, 10000);
     document.getElementById("loading_success").style.visibility = "hidden";
     document.getElementById("loading_error").style.visibility = "hidden";
 
